@@ -12,6 +12,7 @@
             --text: #F5F5F5;
             --error: #E53935;
             --border: #333333;
+            --card-bg: #1A1A1A;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: var(--text); text-align: center; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -20,7 +21,7 @@
         h1 { color: var(--gold); font-size: 2.2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
         p.subtitle { font-size: 1rem; color: #888; margin-bottom: 30px; letter-spacing: 1px; }
         
-        .container { width: 100%; max-width: 600px; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        .container { width: 100%; max-width: 650px; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
         
         .tabs { display: flex; justify-content: space-around; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .tab-btn { background: none; border: none; color: #888; font-size: 0.95rem; font-weight: bold; cursor: pointer; padding: 10px; transition: 0.3s; border-radius: 5px; }
@@ -35,15 +36,24 @@
         .search-btn:hover { background: #F5C842; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
         .search-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; overflow-x: auto; }
+        /* Result Box Styles */
+        .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; max-height: 500px; overflow-y: auto; }
         .result-box.active { display: block; animation: fadeIn 0.4s ease; }
         .result-box h3 { color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 1.2rem; }
         
-        .data-row { margin-bottom: 10px; font-size: 0.95rem; padding: 8px; background: var(--surface); border-radius: 5px; border-left: 3px solid var(--gold); }
-        .data-label { color: var(--gold); font-weight: bold; display: block; margin-bottom: 3px; font-size: 0.85rem; text-transform: uppercase; }
+        .source-group { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; padding: 15px; }
+        .source-title { color: var(--gold); font-size: 1.1rem; margin-bottom: 10px; border-bottom: 1px dashed var(--border); padding-bottom: 5px; }
+        .source-desc { color: #aaa; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.4; }
+        
+        .record-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+        .record-card:last-child { margin-bottom: 0; }
+        .record-card h5 { color: var(--gold); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        
+        .data-row { margin-bottom: 8px; font-size: 0.9rem; padding: 6px; background: var(--surface); border-radius: 4px; border-left: 3px solid var(--gold); }
+        .data-label { color: var(--gold); font-weight: bold; display: block; margin-bottom: 2px; font-size: 0.75rem; text-transform: uppercase; }
         .data-value { color: #ddd; font-family: monospace; word-break: break-all; white-space: pre-wrap; }
         
-        .error-msg { color: var(--error); font-weight: bold; text-align: center; display: none; margin-top: 15px; background: rgba(229, 57, 53, 0.1); padding: 10px; border-radius: 5px; border: 1px solid rgba(229, 57, 53, 0.3); }
+        .error-msg { color: var(--error); font-weight: bold; text-align: center; display: none; margin-top: 15px; background: rgba(229, 57, 53, 0.1); padding: 15px; border-radius: 5px; border: 1px solid rgba(229, 57, 53, 0.3); }
         .error-msg.active { display: block; animation: fadeIn 0.3s ease; }
         
         .loading { color: var(--gold); display: none; margin-top: 15px; font-style: italic; font-weight: bold; }
@@ -87,6 +97,7 @@
 
     <script>
         let currentTab = 'tg-id';
+        // Using allorigins proxy for reliable CORS bypass
         const proxyUrl = 'https://api.allorigins.win/raw?url=';
 
         function switchTab(tab, btn) {
@@ -128,11 +139,22 @@
             resultData.innerHTML = "";
 
             try {
-                let finalData = {};
+                if (currentTab === 'tg-id' || currentTab === 'tg-user') {
+                    let finalData = {};
+                    let finalId = query;
 
-                if (currentTab === 'tg-id') {
-                    const targetUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${query}`;
-                    const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+                    if (currentTab === 'tg-user') {
+                        const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`;
+                        const idRes = await fetch(proxyUrl + encodeURIComponent(idUrl));
+                        const idJson = await idRes.json();
+                        
+                        if(idJson.result && idJson.result.data && idJson.result.data.id) {
+                            finalId = idJson.result.data.id;
+                        } else { throw new Error("Username not found in database"); }
+                    }
+
+                    const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${finalId}`;
+                    const res = await fetch(proxyUrl + encodeURIComponent(dataUrl));
                     const json = await res.json();
                     
                     if(json.success && json.data) {
@@ -144,58 +166,63 @@
                             finalData["Number"] = json.data.results.number;
                             finalData["TG ID"] = json.data.results.tg_id;
                         }
-                    } else { throw new Error("No data found for this Telegram ID"); }
-                    
-                } else if (currentTab === 'tg-user') {
-                    const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`;
-                    const idRes = await fetch(proxyUrl + encodeURIComponent(idUrl));
-                    const idJson = await idRes.json();
-                    
-                    if(idJson.result && idJson.result.data && idJson.result.data.id) {
-                        const fetchedId = idJson.result.data.id;
-                        const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${fetchedId}`;
-                        const res = await fetch(proxyUrl + encodeURIComponent(dataUrl));
-                        const json = await res.json();
-                        
-                        if(json.success && json.data) {
-                            finalData["Operative Name"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
-                            finalData["Operative ID"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_ID || "N/A";
-                            if(json.data.results) {
-                                finalData["Country"] = json.data.results.country;
-                                finalData["Country Code"] = json.data.results.country_code;
-                                finalData["Number"] = json.data.results.number;
-                                finalData["TG ID"] = json.data.results.tg_id;
-                            }
-                        } else { throw new Error("Data not found for this Username"); }
-                    } else { throw new Error("Username not found in database"); }
+                    } else { throw new Error("No data found for this Telegram query"); }
+
+                    for(let key in finalData) {
+                        if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
+                            resultData.innerHTML += `
+                                <div class="data-row">
+                                    <span class="data-label">${key}</span>
+                                    <span class="data-value">${finalData[key]}</span>
+                                </div>`;
+                        }
+                    }
                     
                 } else if (currentTab === 'phone') {
+                    // Phone API with custom rendering
                     const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`;
                     const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
                     const json = await res.json();
                     
-                    if(json.status && json.data) {
+                    if(json.status && json.data && Object.keys(json.data).length > 0) {
+                        let htmlContent = "";
                         for(let key in json.data) {
-                            let sourceTitle = json.data[key].title || key;
-                            let records = json.data[key].records;
-                            if(records) {
-                                finalData[sourceTitle] = JSON.stringify(records, null, 2);
+                            let source = json.data[key];
+                            htmlContent += `<div class="source-group">`;
+                            htmlContent += `<h4 class="source-title">${source.title || key}</h4>`;
+                            
+                            if (source.description) {
+                                // Trim long descriptions
+                                let shortDesc = source.description.length > 150 ? source.description.substring(0, 150) + "..." : source.description;
+                                htmlContent += `<p class="source-desc">${shortDesc}</p>`;
                             }
+                            
+                            if (source.records && source.records.length > 0) {
+                                source.records.forEach((record, index) => {
+                                    htmlContent += `<div class="record-card">`;
+                                    htmlContent += `<h5>Record ${index + 1}</h5>`;
+                                    for (let field in record) {
+                                        if(record[field]) {
+                                            htmlContent += `
+                                                <div class="data-row">
+                                                    <span class="data-label">${field}</span>
+                                                    <span class="data-value">${record[field]}</span>
+                                                </div>`;
+                                        }
+                                    }
+                                    htmlContent += `</div>`;
+                                });
+                            } else {
+                                htmlContent += `<p style="color:#888; font-size:0.9rem;">No detailed records in this source.</p>`;
+                            }
+                            htmlContent += `</div>`;
                         }
-                        if(Object.keys(finalData).length === 0) throw new Error("No records found for this number");
-                    } else { throw new Error("No data found or API limit reached"); }
-                }
-
-                // Render Data
-                for(let key in finalData) {
-                    if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
-                        resultData.innerHTML += `
-                            <div class="data-row">
-                                <span class="data-label">${key}</span>
-                                <span class="data-value">${finalData[key]}</span>
-                            </div>`;
+                        resultData.innerHTML = htmlContent;
+                    } else { 
+                        throw new Error("No data found for this phone number or API limit reached"); 
                     }
                 }
+
                 resultBox.classList.add('active');
 
             } catch (err) {
