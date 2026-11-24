@@ -12,7 +12,6 @@
             --text: #F5F5F5;
             --error: #E53935;
             --border: #333333;
-            --card-bg: #1A1A1A;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: var(--text); text-align: center; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
@@ -36,7 +35,6 @@
         .search-btn:hover { background: #F5C842; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
         .search-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        /* Result Box Styles */
         .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; max-height: 500px; overflow-y: auto; }
         .result-box.active { display: block; animation: fadeIn 0.4s ease; }
         .result-box h3 { color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 1.2rem; }
@@ -97,8 +95,8 @@
 
     <script>
         let currentTab = 'tg-id';
-        // Using allorigins proxy for reliable CORS bypass
-        const proxyUrl = 'https://api.allorigins.win/raw?url=';
+        // NEW RELIABLE PROXY
+        const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=';
 
         function switchTab(tab, btn) {
             currentTab = tab;
@@ -146,6 +144,7 @@
                     if (currentTab === 'tg-user') {
                         const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`;
                         const idRes = await fetch(proxyUrl + encodeURIComponent(idUrl));
+                        if(!idRes.ok) throw new Error("Proxy Failed");
                         const idJson = await idRes.json();
                         
                         if(idJson.result && idJson.result.data && idJson.result.data.id) {
@@ -155,6 +154,7 @@
 
                     const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${finalId}`;
                     const res = await fetch(proxyUrl + encodeURIComponent(dataUrl));
+                    if(!res.ok) throw new Error("Proxy Failed");
                     const json = await res.json();
                     
                     if(json.success && json.data) {
@@ -179,9 +179,9 @@
                     }
                     
                 } else if (currentTab === 'phone') {
-                    // Phone API with custom rendering
                     const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`;
                     const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+                    if(!res.ok) throw new Error("Proxy Failed");
                     const json = await res.json();
                     
                     if(json.status && json.data && Object.keys(json.data).length > 0) {
@@ -192,7 +192,6 @@
                             htmlContent += `<h4 class="source-title">${source.title || key}</h4>`;
                             
                             if (source.description) {
-                                // Trim long descriptions
                                 let shortDesc = source.description.length > 150 ? source.description.substring(0, 150) + "..." : source.description;
                                 htmlContent += `<p class="source-desc">${shortDesc}</p>`;
                             }
@@ -226,7 +225,7 @@
                 resultBox.classList.add('active');
 
             } catch (err) {
-                errorMsg.innerText = err.message;
+                errorMsg.innerText = "Error: " + err.message + ". (Agar AdBlocker on hai, toh use band karein)";
                 errorMsg.classList.add('active');
             } finally {
                 btn.disabled = false;
