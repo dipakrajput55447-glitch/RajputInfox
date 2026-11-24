@@ -95,8 +95,33 @@
 
     <script>
         let currentTab = 'tg-id';
-        // NEW RELIABLE PROXY
-        const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=';
+
+        // MULTI-PROXY SYSTEM: Agar ek fail ho, toh doosra try karega
+        async function fetchWithProxy(targetUrl) {
+            const proxies = [
+                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
+                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
+                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+                `https://cors-anywhere.herokuapp.com/${targetUrl}`
+            ];
+
+            for (let proxy of proxies) {
+                try {
+                    const res = await fetch(proxy);
+                    if (res.ok) {
+                        const text = await res.text();
+                        try {
+                            return JSON.parse(text); // Check karein ki data sahi JSON hai
+                        } catch(e) {
+                            console.log("JSON Parse Error from proxy");
+                        }
+                    }
+                } catch (e) {
+                    console.log("Proxy failed, trying next...");
+                }
+            }
+            throw new Error("All proxies failed. API down or blocked.");
+        }
 
         function switchTab(tab, btn) {
             currentTab = tab;
@@ -143,9 +168,7 @@
 
                     if (currentTab === 'tg-user') {
                         const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`;
-                        const idRes = await fetch(proxyUrl + encodeURIComponent(idUrl));
-                        if(!idRes.ok) throw new Error("Proxy Failed");
-                        const idJson = await idRes.json();
+                        const idJson = await fetchWithProxy(idUrl);
                         
                         if(idJson.result && idJson.result.data && idJson.result.data.id) {
                             finalId = idJson.result.data.id;
@@ -153,9 +176,7 @@
                     }
 
                     const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${finalId}`;
-                    const res = await fetch(proxyUrl + encodeURIComponent(dataUrl));
-                    if(!res.ok) throw new Error("Proxy Failed");
-                    const json = await res.json();
+                    const json = await fetchWithProxy(dataUrl);
                     
                     if(json.success && json.data) {
                         finalData["Operative Name"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
@@ -180,9 +201,7 @@
                     
                 } else if (currentTab === 'phone') {
                     const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`;
-                    const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
-                    if(!res.ok) throw new Error("Proxy Failed");
-                    const json = await res.json();
+                    const json = await fetchWithProxy(targetUrl);
                     
                     if(json.status && json.data && Object.keys(json.data).length > 0) {
                         let htmlContent = "";
@@ -218,14 +237,14 @@
                         }
                         resultData.innerHTML = htmlContent;
                     } else { 
-                        throw new Error("No data found for this phone number or API limit reached"); 
+                        throw new Error("No data found for this phone number"); 
                     }
                 }
 
                 resultBox.classList.add('active');
 
             } catch (err) {
-                errorMsg.innerText = "Error: " + err.message + ". (Agar AdBlocker on hai, toh use band karein)";
+                errorMsg.innerText = err.message;
                 errorMsg.classList.add('active');
             } finally {
                 btn.disabled = false;
