@@ -6,43 +6,54 @@
     <title>Rajput Info - Premium OSINT</title>
     <style>
         :root {
-            --bg: #0F0F0F;
-            --surface: #1A1A1A;
+            --bg: #050505;
+            --surface: #111111;
             --gold: #D4AF37;
             --text: #F5F5F5;
             --error: #E53935;
+            --border: #333333;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: var(--text); text-align: center; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .logo { font-size: 3rem; margin-top: 20px; margin-bottom: 10px; }
-        h1 { color: var(--gold); font-size: 2.2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; }
-        p.subtitle { font-size: 1rem; color: #aaa; margin-bottom: 30px; }
         
-        .container { width: 100%; max-width: 600px; background: var(--surface); border: 1px solid #333; border-radius: 15px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .logo { font-size: 3rem; margin-top: 20px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
+        h1 { color: var(--gold); font-size: 2.2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
+        p.subtitle { font-size: 1rem; color: #888; margin-bottom: 30px; letter-spacing: 1px; }
         
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; color: #aaa; font-size: 1rem; font-weight: bold; cursor: pointer; padding: 10px; transition: 0.3s; }
-        .tab-btn.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+        .container { width: 100%; max-width: 600px; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        
+        .tabs { display: flex; justify-content: space-around; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; color: #888; font-size: 0.95rem; font-weight: bold; cursor: pointer; padding: 10px; transition: 0.3s; border-radius: 5px; }
+        .tab-btn:hover { color: var(--gold); }
+        .tab-btn.active { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
         
         .input-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; background: var(--bg); border: 1px solid #444; border-radius: 8px; color: white; font-size: 1rem; outline: none; }
-        input:focus { border-color: var(--gold); }
-        .search-btn { background: var(--gold); color: #000; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .search-btn:hover { background: #F5C842; transform: translateY(-2px); }
-        .search-btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+        input { width: 100%; padding: 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
         
-        .result-box { background: var(--bg); border: 1px solid #333; border-radius: 10px; padding: 15px; text-align: left; display: none; margin-top: 20px; overflow-x: auto; }
-        .result-box.active { display: block; }
-        .result-box h3 { color: var(--gold); margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .data-row { margin-bottom: 8px; font-size: 0.95rem; }
-        .data-label { color: #888; font-weight: bold; }
-        .data-value { color: #fff; font-family: monospace; }
-        .error-msg { color: var(--error); font-weight: bold; text-align: center; display: none; margin-top: 15px; }
-        .error-msg.active { display: block; }
-        .loading { color: var(--gold); display: none; margin-top: 15px; font-style: italic; }
-        .loading.active { display: block; }
+        .search-btn { background: var(--gold); color: #000; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .search-btn:hover { background: #F5C842; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
+        .search-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
         
-        .telegram-join { margin-top: 30px; display: inline-block; text-decoration: none; color: #000; background: var(--gold); padding: 12px 30px; border-radius: 30px; font-weight: bold; }
+        .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; overflow-x: auto; }
+        .result-box.active { display: block; animation: fadeIn 0.4s ease; }
+        .result-box h3 { color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 1.2rem; }
+        
+        .data-row { margin-bottom: 10px; font-size: 0.95rem; padding: 8px; background: var(--surface); border-radius: 5px; border-left: 3px solid var(--gold); }
+        .data-label { color: var(--gold); font-weight: bold; display: block; margin-bottom: 3px; font-size: 0.85rem; text-transform: uppercase; }
+        .data-value { color: #ddd; font-family: monospace; word-break: break-all; white-space: pre-wrap; }
+        
+        .error-msg { color: var(--error); font-weight: bold; text-align: center; display: none; margin-top: 15px; background: rgba(229, 57, 53, 0.1); padding: 10px; border-radius: 5px; border: 1px solid rgba(229, 57, 53, 0.3); }
+        .error-msg.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        .loading { color: var(--gold); display: none; margin-top: 15px; font-style: italic; font-weight: bold; }
+        .loading.active { display: block; animation: pulse 1.5s infinite; }
+        
+        .telegram-join { margin-top: 40px; display: inline-block; text-decoration: none; color: #000; background: var(--gold); padding: 12px 30px; border-radius: 30px; font-weight: bold; transition: 0.3s; }
+        .telegram-join:hover { background: #F5C842; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -59,7 +70,7 @@
         </div>
 
         <div class="input-group">
-            <input type="text" id="searchInput" placeholder="Enter Telegram ID (e.g. 1234567890)">
+            <input type="text" id="searchInput" placeholder="Enter Telegram ID (e.g. 1234567890)" onkeypress="handleEnter(event)">
             <button class="search-btn" id="searchBtn" onclick="performSearch()">SEARCH</button>
         </div>
 
@@ -76,6 +87,7 @@
 
     <script>
         let currentTab = 'tg-id';
+        const proxyUrl = 'https://api.allorigins.win/raw?url=';
 
         function switchTab(tab, btn) {
             currentTab = tab;
@@ -88,6 +100,14 @@
             if(tab === 'phone') input.placeholder = "Enter Phone Number (e.g. +919876543210)";
             
             input.value = "";
+            hideResults();
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') performSearch();
+        }
+
+        function hideResults() {
             document.getElementById('resultBox').classList.remove('active');
             document.getElementById('errorMsg').classList.remove('active');
         }
@@ -104,54 +124,76 @@
 
             btn.disabled = true;
             loading.classList.add('active');
-            resultBox.classList.remove('active');
-            errorMsg.classList.remove('active');
+            hideResults();
+            resultData.innerHTML = "";
 
             try {
                 let finalData = {};
 
                 if (currentTab === 'tg-id') {
-                    // Telegram ID API
-                    const res = await fetch(`https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${query}`);
+                    const targetUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${query}`;
+                    const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
                     const json = await res.json();
+                    
                     if(json.success && json.data) {
-                        finalData = json.data.results || {};
-                        finalData.Name = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
-                    } else { throw new Error("No data found for this ID"); }
+                        finalData["Operative Name"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
+                        finalData["Operative ID"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_ID || "N/A";
+                        if(json.data.results) {
+                            finalData["Country"] = json.data.results.country;
+                            finalData["Country Code"] = json.data.results.country_code;
+                            finalData["Number"] = json.data.results.number;
+                            finalData["TG ID"] = json.data.results.tg_id;
+                        }
+                    } else { throw new Error("No data found for this Telegram ID"); }
                     
                 } else if (currentTab === 'tg-user') {
-                    // Telegram Username -> ID -> Data API
-                    const idRes = await fetch(`https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`);
+                    const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`;
+                    const idRes = await fetch(proxyUrl + encodeURIComponent(idUrl));
                     const idJson = await idRes.json();
+                    
                     if(idJson.result && idJson.result.data && idJson.result.data.id) {
                         const fetchedId = idJson.result.data.id;
-                        const res = await fetch(`https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${fetchedId}`);
+                        const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${fetchedId}`;
+                        const res = await fetch(proxyUrl + encodeURIComponent(dataUrl));
                         const json = await res.json();
+                        
                         if(json.success && json.data) {
-                            finalData = json.data.results || {};
-                            finalData.Name = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
+                            finalData["Operative Name"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
+                            finalData["Operative ID"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_ID || "N/A";
+                            if(json.data.results) {
+                                finalData["Country"] = json.data.results.country;
+                                finalData["Country Code"] = json.data.results.country_code;
+                                finalData["Number"] = json.data.results.number;
+                                finalData["TG ID"] = json.data.results.tg_id;
+                            }
                         } else { throw new Error("Data not found for this Username"); }
-                    } else { throw new Error("Username not found"); }
+                    } else { throw new Error("Username not found in database"); }
                     
                 } else if (currentTab === 'phone') {
-                    // DeepOSINT Phone API
-                    const res = await fetch(`https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`);
+                    const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`;
+                    const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
                     const json = await res.json();
+                    
                     if(json.status && json.data) {
-                        // Extract nested data for display
                         for(let key in json.data) {
-                            if(json.data[key].records) {
-                                finalData[`[${json.data[key].title || key}]`] = JSON.stringify(json.data[key].records);
+                            let sourceTitle = json.data[key].title || key;
+                            let records = json.data[key].records;
+                            if(records) {
+                                finalData[sourceTitle] = JSON.stringify(records, null, 2);
                             }
                         }
-                    } else { throw new Error("No records found for this phone number"); }
+                        if(Object.keys(finalData).length === 0) throw new Error("No records found for this number");
+                    } else { throw new Error("No data found or API limit reached"); }
                 }
 
-                // Display Data
-                resultData.innerHTML = "";
+                // Render Data
                 for(let key in finalData) {
-                    if(finalData[key]) {
-                        resultData.innerHTML += `<div class="data-row"><span class="data-label">${key}:</span> <span class="data-value">${finalData[key]}</span></div>`;
+                    if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
+                        resultData.innerHTML += `
+                            <div class="data-row">
+                                <span class="data-label">${key}</span>
+                                <span class="data-value">${finalData[key]}</span>
+                            </div>`;
                     }
                 }
                 resultBox.classList.add('active');
