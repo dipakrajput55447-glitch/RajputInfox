@@ -2,351 +2,156 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Rajput Info 3.0 — Premium OSINT</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#020702">
+<title>RAJPUT INFO 3.0</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
-:root {
-    --bg: #050505; --panel: rgba(15, 15, 15, 0.85); --gold: #D4AF37;
-    --gold-glow: rgba(212, 175, 55, 0.4); --gold-bright: #F5C842;
-    --text: #F5F5F5; --dim: #888; --border: #2a2a2a; --green: #4ade80;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; -webkit-tap-highlight-color: transparent; }
-body { background-color: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; overflow-x: hidden; position: relative; display: flex; flex-direction: column; align-items: center; }
+:root{--green:#00ff59;--green2:#00b83e;--bg:#030603;--panel:rgba(5,15,8,.88);--line:rgba(0,255,89,.27);--muted:#8a9a8e}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:var(--bg);color:#e8f1e9;font-family:'Share Tech Mono',monospace;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse at 50% 35%,#073018 0%,#020702 58%,#000 100%)}
+body:after{content:"";position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.14;background:repeating-linear-gradient(0deg,transparent 0 3px,rgba(0,255,60,.14) 4px)}
+canvas#matrix{position:fixed;inset:0;width:100%;height:100%;z-index:-1;opacity:.17}
+.wrap{width:min(100%,520px);margin:auto;padding:18px 15px 40px;position:relative}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 3px 22px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand-icon{width:48px;height:48px;border:1px solid var(--line);display:grid;place-items:center;color:var(--green);box-shadow:0 0 22px #00ff5920;clip-path:polygon(15% 0,100% 0,100% 85%,85% 100%,0 100%,0 15%)}
+.brand-icon i{font-size:22px}
+.brand h1{font-family:Orbitron,sans-serif;font-size:20px;letter-spacing:1px;font-weight:900}
+.brand h1 span{color:var(--green)}
+.brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:3px;margin-top:4px}
+.version{border:1px solid var(--green);padding:5px 8px;color:var(--green);font-size:10px;letter-spacing:1px}
+.status{display:flex;justify-content:center;align-items:center;gap:9px;color:var(--green);font-size:10px;letter-spacing:2px;margin:2px 0 20px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 10px var(--green);animation:pulse 1.4s infinite}
+@keyframes pulse{50%{opacity:.3;box-shadow:none}}
+.hero{border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(6,24,12,.94),rgba(2,7,3,.96));overflow:hidden;position:relative;box-shadow:0 0 32px #00ff5910}
+.hero:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,#00ff5914,transparent 65%);pointer-events:none}
+.hero-top{text-align:center;padding:25px 18px 13px}
+.hero-top .eyebrow{color:var(--green);font-size:10px;letter-spacing:4px}
+.hero-top h2{font:900 clamp(26px,7vw,34px) Orbitron,sans-serif;margin:13px 0 9px;line-height:1.25}
+.hero-top h2 span{color:var(--green);text-shadow:0 0 15px #00ff5945}
+.hero-top p{color:#a5b5a8;font-size:12px;line-height:1.6}
+.globe{height:155px;display:grid;place-items:center;position:relative;margin:3px 0 8px}
+.globe .ring{position:absolute;width:150px;height:150px;border:1px solid #00ff5940;border-radius:50%;box-shadow:inset 0 0 30px #00ff5910,0 0 25px #00ff5910}
+.globe .ring:nth-child(2){width:120px;height:120px;border-style:dashed;animation:spin 20s linear infinite}
+.globe .ring:nth-child(3){width:175px;height:175px;border-color:#00ff5915}
+.globe i{font-size:88px;color:var(--green);filter:drop-shadow(0 0 15px #00ff5960)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.features{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:14px}
+.feature{border:1px solid #123c20;background:#07120a;padding:12px;border-radius:10px;display:flex;gap:10px;align-items:center}
+.feature i{color:var(--green);font-size:16px;width:22px;text-align:center}
+.feature strong{display:block;font-size:11px;letter-spacing:1px}
+.feature small{display:block;color:var(--muted);font-size:9px;margin-top:4px}
+.search-panel{margin:16px 0 0;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:15px;box-shadow:0 0 25px #00ff5910}
+.panel-title{font:600 12px Orbitron,sans-serif;letter-spacing:1px;margin-bottom:13px;display:flex;justify-content:space-between}
+.panel-title span{color:var(--green);font-size:10px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.tab{background:#07100a;color:#819487;border:1px solid #173522;border-radius:8px;padding:10px 5px;font:11px 'Share Tech Mono';cursor:pointer}
+.tab.active{border-color:var(--green);color:var(--green);background:#06200d;box-shadow:inset 0 0 15px #00ff5910}
+.input-wrap{display:flex;align-items:center;gap:10px;background:#020502;border:1px solid #21432b;border-radius:10px;padding:0 12px}
+.input-wrap i{color:var(--green)}
+input{width:100%;min-width:0;background:transparent;border:0;outline:0;color:#fff;padding:15px 0;font:13px 'Share Tech Mono'}
+input::placeholder{color:#657568}
+.search-btn{width:100%;border:0;border-radius:9px;margin-top:11px;padding:14px;background:linear-gradient(100deg,#00bd42,#00ff59);color:#001707;font:700 13px Orbitron,sans-serif;letter-spacing:1px;cursor:pointer;box-shadow:0 0 20px #00ff5920;transition:.2s}
+.search-btn:active{transform:scale(.98)}
+.search-btn:disabled{opacity:.65}
+.note{font-size:10px;color:#748779;text-align:center;margin-top:10px;line-height:1.6}
+.results{display:none;border:1px solid var(--line);border-radius:12px;margin-top:12px;padding:14px;background:#061109; max-height: 500px; overflow-y: auto;}
+.results.show{display:block}
+.results h3{color:var(--green);font:12px Orbitron;margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;}
+.results p{font-size:12px;line-height:1.6;color:#bdcabe}
 
-/* Background */
-#matrix { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.15; pointer-events: none; }
-body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle at center, transparent 0%, #000 80%); z-index: 1; pointer-events: none; }
+/* Result Data Styles */
+.data-group { margin-bottom: 12px; background: #07100a; border: 1px solid #173522; border-radius: 8px; padding: 10px; }
+.data-group h4 { color: var(--green); font-size: 11px; font-family: Orbitron; margin-bottom: 8px; border-bottom: 1px dashed #173522; padding-bottom: 5px; }
+.data-row { margin-bottom: 6px; background: #020502; padding: 8px; border-left: 2px solid var(--green); border-radius: 4px; }
+.data-lbl { display: block; font-size: 9px; color: var(--muted); text-transform: uppercase; margin-bottom: 2px; }
+.data-val { font-size: 12px; color: #fff; word-break: break-all; }
+.action-btns { display: flex; gap: 8px; }
+.action-btns button { background: #07100a; color: var(--green); border: 1px solid var(--green); padding: 4px 8px; border-radius: 4px; font-size: 10px; cursor: pointer; font-family: 'Share Tech Mono'; }
+.error-text { color: #ff4444; font-size: 12px; text-align: center; }
 
-.app-wrap { position: relative; z-index: 2; width: 100%; max-width: 500px; padding: 15px; display: flex; flex-direction: column; gap: 15px; min-height: calc(100vh - 80px); }
-
-/* Hide/Show Pages */
-.page { display: none; flex-direction: column; gap: 15px; animation: fadeIn 0.3s ease; width: 100%; }
-.page.active { display: flex; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Header */
-header { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; }
-.logo-area { display: flex; align-items: center; gap: 10px; }
-.logo-icon { font-size: 2.2rem; color: var(--gold); text-shadow: 0 0 15px var(--gold-glow); }
-.title-text h1 { font-size: 1.5rem; color: var(--gold); font-weight: 900; letter-spacing: 1px; text-shadow: 0 0 10px var(--gold-glow); margin: 0; line-height: 1.1; }
-.title-text p { font-size: 0.55rem; color: var(--gold-bright); letter-spacing: 1.5px; text-transform: uppercase; font-weight: bold; }
-.version-badge { background: var(--gold); color: #000; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; margin-left: 5px; font-weight: bold; vertical-align: middle; }
-.header-actions { display: flex; gap: 10px; }
-.action-btn { background: #111; border: 1px solid var(--gold); color: var(--gold); width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); cursor: pointer; transition: 0.3s; }
-.action-btn.telegram { background: #229ED9; border-color: #229ED9; color: #fff; box-shadow: 0 0 10px rgba(34, 158, 217, 0.3); }
-
-/* Stats Row */
-.stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
-.stat-box { background: var(--panel); border: 1px solid #222; border-radius: 10px; padding: 10px 5px; text-align: center; position: relative; overflow: hidden; }
-.stat-box::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.5; }
-.stat-box i { color: var(--gold); font-size: 1.1rem; margin-bottom: 5px; }
-.stat-box .val { font-size: 1.1rem; font-weight: bold; color: var(--text); line-height: 1.1; }
-.stat-box .lbl { font-size: 0.6rem; color: var(--dim); text-transform: uppercase; margin-top: 2px; }
-.stat-box .green-dot { color: var(--green); font-size: 0.8rem; margin-right: 3px; }
-
-/* Hero Section */
-.hero { text-align: center; position: relative; padding: 10px 0; margin-top: 5px; }
-.hero-graphic { width: 150px; height: 150px; margin: 0 auto; position: relative; background: radial-gradient(circle, rgba(212,175,55,0.15) 0%, transparent 70%); border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-.hero-graphic::before { content: "\f21b"; font-family: "FontAwesome"; font-size: 80px; color: var(--gold); opacity: 0.8; text-shadow: 0 0 20px var(--gold-glow); position: relative; z-index: 2; }
-.hero-graphic::after { content: ""; position: absolute; inset: 10px; border: 2px dashed rgba(212, 175, 55, 0.4); border-radius: 50%; animation: spin 15s linear infinite; }
-@keyframes spin { 100% { transform: rotate(360deg); } }
-.hero-title { font-size: 1.8rem; font-weight: 900; color: #fff; letter-spacing: 2px; text-shadow: 0 0 20px var(--gold-glow); margin-top: -10px; z-index: 3; position: relative; }
-.hero-sub { font-size: 0.7rem; color: var(--gold); letter-spacing: 2px; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 5px; }
-.hero-sub::before, .hero-sub::after { content: ""; height: 1px; width: 30px; background: var(--gold); opacity: 0.5; }
-
-/* Tabs */
-.tabs { display: flex; background: #0a0a0a; border: 1px solid #333; border-radius: 12px; padding: 5px; gap: 5px; }
-.tab-btn { flex: 1; padding: 10px; border: none; background: transparent; color: var(--dim); font-size: 0.8rem; font-weight: bold; border-radius: 8px; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
-.tab-btn i { font-size: 1.1rem; }
-.tab-btn.active { background: linear-gradient(180deg, #1a1a1a, #111); color: var(--gold); border: 1px solid var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.1); }
-
-/* Search Box */
-.search-container { background: #0a0a0a; border: 1px solid #333; border-radius: 15px; padding: 15px; }
-.input-label { color: var(--gold); font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-.input-wrapper { position: relative; margin-bottom: 15px; }
-.input-wrapper i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--gold); }
-input { width: 100%; padding: 15px 15px 15px 45px; background: #000; border: 1px solid #333; border-radius: 10px; color: #fff; font-size: 1rem; font-family: monospace; outline: none; }
-input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-.search-btn { width: 100%; padding: 15px; background: linear-gradient(90deg, var(--gold), var(--gold-bright)); border: none; border-radius: 10px; color: #000; font-size: 1.1rem; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 10px; cursor: pointer; box-shadow: 0 5px 20px rgba(212, 175, 55, 0.3); text-transform: uppercase; }
-.search-btn:disabled { background: #333; color: #888; box-shadow: none; }
-
-/* Features & Result */
-.features-box { background: #0a0a0a; border: 1px solid #333; border-radius: 15px; padding: 15px; display: flex; align-items: center; justify-content: space-between; }
-.feat-list { display: flex; flex-direction: column; gap: 10px; }
-.feat-list h4 { color: var(--gold); font-size: 0.9rem; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
-.feat-item { display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: #bbb; }
-.feat-item i { color: var(--gold); }
-.globe-icon { font-size: 3.5rem; color: #222; text-shadow: 0 0 20px rgba(212, 175, 55, 0.2); position: relative; }
-.globe-icon::after { content: ""; position: absolute; inset: -5px; border: 1px solid var(--gold); border-radius: 50%; opacity: 0.3; animation: pulse 2s infinite; }
-@keyframes pulse { 0% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.1; } 100% { transform: scale(1); opacity: 0.3; } }
-
-.notice-bar { display: flex; align-items: center; justify-content: space-between; background: #000; border: 1px solid #222; padding: 10px 15px; border-radius: 8px; font-size: 0.7rem; color: #aaa; }
-.notice-bar span { display: flex; align-items: center; gap: 5px; }
-.notice-bar i { color: var(--gold); }
-
-.result-box { display: none; background: #0a0a0a; border: 1px solid var(--gold); border-radius: 15px; padding: 15px; margin-top: 10px; }
-.result-box.active { display: block; }
-.result-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
-.result-header h3 { color: var(--gold); font-size: 1rem; }
-.result-actions button { background: #111; border: 1px solid var(--gold); color: var(--gold); padding: 5px 10px; border-radius: 5px; font-size: 0.75rem; cursor: pointer; margin-left: 5px; }
-.data-group { background: #111; border: 1px solid #222; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
-.data-group h4 { color: var(--gold); font-size: 0.85rem; margin-bottom: 8px; }
-.data-row { display: flex; flex-direction: column; margin-bottom: 5px; background: #000; padding: 8px; border-radius: 5px; border-left: 2px solid var(--gold); }
-.data-lbl { color: var(--dim); font-size: 0.65rem; text-transform: uppercase; }
-.data-val { color: #fff; font-family: monospace; font-size: 0.85rem; word-break: break-all; }
-.error-msg { display: none; background: rgba(229, 57, 53, 0.1); border: 1px solid #E53935; color: #E53935; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.85rem; margin-top: 10px; }
-.error-msg.active { display: block; }
-
-/* Pages Specific (History, Favs, Dashboard, Profile) */
-.page-title { color: var(--gold); font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-.empty-state { text-align: center; color: var(--dim); padding: 40px 20px; font-size: 0.9rem; }
-.empty-state i { font-size: 3rem; color: #222; margin-bottom: 10px; }
-.history-card { background: #0a0a0a; border: 1px solid #333; padding: 15px; border-radius: 10px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-.history-info h4 { color: var(--gold); font-size: 0.9rem; margin-bottom: 5px; }
-.history-info p { color: var(--dim); font-size: 0.7rem; }
-.btn-sm { background: #111; color: var(--gold); border: 1px solid var(--gold); padding: 5px 10px; border-radius: 5px; font-size: 0.8rem; cursor: pointer; }
-
-.profile-card { background: #0a0a0a; border: 1px solid #333; border-radius: 15px; padding: 20px; text-align: center; }
-.profile-avatar { width: 80px; height: 80px; background: #111; border: 2px solid var(--gold); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: var(--gold); margin: 0 auto 15px auto; }
-.profile-card h3 { color: #fff; font-size: 1.2rem; margin-bottom: 5px; }
-.profile-card p { color: var(--dim); font-size: 0.8rem; margin-bottom: 20px; }
-.profile-detail { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #222; font-size: 0.9rem; }
-.profile-detail span:first-child { color: var(--dim); }
-.profile-detail span:last-child { color: var(--gold); font-weight: bold; }
-.logout-btn { width: 100%; padding: 12px; background: rgba(229, 57, 53, 0.1); color: #E53935; border: 1px solid #E53935; border-radius: 8px; margin-top: 20px; font-weight: bold; cursor: pointer; }
-
-/* Bottom Nav */
-.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(5, 5, 5, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #222; display: flex; justify-content: space-around; padding: 10px 0; z-index: 10; }
-.nav-item { display: flex; flex-direction: column; align-items: center; color: #555; font-size: 0.6rem; gap: 4px; text-decoration: none; cursor: pointer; transition: 0.3s; }
-.nav-item i { font-size: 1.2rem; }
-.nav-item.active { color: var(--gold); }
-.nav-item.active i { text-shadow: 0 0 10px var(--gold-glow); }
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: #000; }
-::-webkit-scrollbar-thumb { background: #333; }
+footer{text-align:center;padding:25px 5px 8px;color:#708274;font-size:9px;letter-spacing:3px}
+footer b{display:block;color:var(--green);font:12px Orbitron;margin-bottom:8px;letter-spacing:4px}
+@media(min-width:450px){.wrap{padding-top:24px}.hero-top h2{font-size:36px}}
 </style>
 </head>
 <body>
 <canvas id="matrix"></canvas>
+<div class="wrap">
+<header>
+<div class="brand">
+<div class="brand-icon"><i class="fa-solid fa-user-secret"></i></div>
+<div><h1>RAJPUT <span>INFO</span></h1><small>HACK THE SYSTEM</small></div>
+</div><div class="version">V 3.0</div>
+</header>
+<div class="status"><span class="dot"></span> SYSTEM ONLINE • API CONNECTED</div>
 
-<div class="app-wrap">
-    <!-- HEADER (Common) -->
-    <header>
-        <div class="logo-area">
-            <i class="fa-solid fa-crown logo-icon"></i>
-            <div class="title-text">
-                <h1>RAJPUT INFO <span class="version-badge">3.0</span></h1>
-                <p>Premium OSINT & Intelligence</p>
-            </div>
-        </div>
-        <div class="header-actions">
-            <button class="action-btn" onclick="if(window.AndroidBridge) window.AndroidBridge.openAdmin()"><i class="fa-solid fa-gear"></i></button>
-            <a href="https://t.me/AnonymouschatbotR" class="action-btn telegram"><i class="fa-brands fa-telegram"></i></a>
-        </div>
-    </header>
+<section class="hero">
+<div class="hero-top"><div class="eyebrow">SEARCH • ANALYZE • EXPLORE</div>
+<h2>INFORMATION<br><span>ACCESS TERMINAL</span></h2>
+<p>A sleek lookup interface for authorized, public information.</p></div>
+<div class="globe"><div class="ring"></div><div class="ring"></div><div class="ring"></div><i class="fa-solid fa-globe"></i></div>
+<div class="features">
+<div class="feature"><i class="fa-solid fa-shield-halved"></i><div><strong>PRIVACY FIRST</strong><small>Responsible lookup</small></div></div>
+<div class="feature"><i class="fa-solid fa-bolt"></i><div><strong>FAST INTERFACE</strong><small>Quick search UI</small></div></div>
+<div class="feature"><i class="fa-solid fa-magnifying-glass"></i><div><strong>PUBLIC SOURCES</strong><small>Open information</small></div></div>
+<div class="feature"><i class="fa-solid fa-crown"></i><div><strong>PREMIUM DESIGN</strong><small>Ad-free aesthetic</small></div></div>
+</div></section>
 
-    <!-- PAGE 1: HOME -->
-    <div id="page-home" class="page active">
-        <div class="stats-row">
-            <div class="stat-box">
-                <i class="fa-solid fa-users"></i>
-                <div class="val" id="uiCredits">0</div>
-                <div class="lbl">Credits</div>
-            </div>
-            <div class="stat-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <div class="val" id="uiSearches">0</div>
-                <div class="lbl">Searches</div>
-            </div>
-            <div class="stat-box">
-                <i class="fa-solid fa-user-group"></i>
-                <div class="val">842</div>
-                <div class="lbl">Users</div>
-            </div>
-            <div class="stat-box">
-                <i class="fa-solid fa-circle green-dot"></i>
-                <div class="val" style="font-size:0.9rem;">Online</div>
-                <div class="lbl">API Status</div>
-            </div>
-        </div>
-
-        <div class="hero">
-            <div class="hero-graphic"></div>
-            <div class="hero-title">RAJPUT INFO</div>
-            <div class="hero-sub">Search • Analyze • Discover</div>
-        </div>
-
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('tg-id', this)"><i class="fa-brands fa-telegram"></i> TG ID</button>
-            <button class="tab-btn" onclick="switchTab('tg-user', this)"><i class="fa-solid fa-user"></i> Username</button>
-            <button class="tab-btn" onclick="switchTab('phone', this)"><i class="fa-solid fa-phone"></i> Phone Info</button>
-        </div>
-
-        <div class="search-container">
-            <div class="input-label" id="searchLabel"><i class="fa-solid fa-phone"></i> Enter Phone Number</div>
-            <div class="input-wrapper">
-                <i class="fa-solid fa-key" id="searchIcon"></i>
-                <input type="text" id="searchInput" placeholder="+91 98765 43210" onkeypress="handleEnter(event)">
-            </div>
-            <button class="search-btn" id="searchBtn" onclick="performSearch()">
-                <i class="fa-solid fa-magnifying-glass"></i> Search Now <i class="fa-solid fa-angles-right"></i>
-            </button>
-            <div class="error-msg" id="errorMsg"></div>
-        </div>
-
-        <div class="result-box" id="resultBox">
-            <div class="result-header">
-                <h3>◆ REPORT</h3>
-                <div class="result-actions">
-                    <button onclick="saveFavorite()" style="color: var(--gold-bright);"><i class="fa-regular fa-star"></i></button>
-                    <button onclick="copyResults()" id="copyBtn"><i class="fa-solid fa-copy"></i></button>
-                    <button onclick="downloadResults()"><i class="fa-solid fa-download"></i></button>
-                </div>
-            </div>
-            <div id="resultData"></div>
-        </div>
-
-        <div class="features-box">
-            <div class="feat-list">
-                <h4><i class="fa-solid fa-bolt"></i> Premium Features</h4>
-                <div class="feat-item"><i class="fa-solid fa-circle-check"></i> Complete Location & Address</div>
-                <div class="feat-item"><i class="fa-solid fa-circle-check"></i> SIM & Operator Details</div>
-                <div class="feat-item"><i class="fa-solid fa-circle-check"></i> Data Breach History</div>
-                <div class="feat-item"><i class="fa-solid fa-circle-check"></i> Public Records & More...</div>
-            </div>
-            <i class="fa-solid fa-earth-americas globe-icon"></i>
-        </div>
-    </div>
-
-    <!-- PAGE 2: HISTORY -->
-    <div id="page-history" class="page">
-        <div class="page-title"><i class="fa-solid fa-clock-rotate-left"></i> Search History</div>
-        <div id="historyList"></div>
-    </div>
-
-    <!-- PAGE 3: FAVORITES -->
-    <div id="page-favorites" class="page">
-        <div class="page-title"><i class="fa-solid fa-star"></i> Favorites</div>
-        <div id="favoritesList"></div>
-    </div>
-
-    <!-- PAGE 4: DASHBOARD -->
-    <div id="page-dashboard" class="page">
-        <div class="page-title"><i class="fa-solid fa-chart-simple"></i> Dashboard</div>
-        <div class="stats-row" style="grid-template-columns: 1fr 1fr;">
-            <div class="stat-box" style="padding: 20px;">
-                <i class="fa-solid fa-magnifying-glass" style="font-size:2rem;"></i>
-                <div class="val" id="dashTotalSearches" style="font-size:2rem; margin-top:10px;">0</div>
-                <div class="lbl">Total Searches</div>
-            </div>
-            <div class="stat-box" style="padding: 20px;">
-                <i class="fa-solid fa-coins" style="font-size:2rem;"></i>
-                <div class="val" id="dashTotalCredits" style="font-size:2rem; margin-top:10px;">0</div>
-                <div class="lbl">Credits Left</div>
-            </div>
-        </div>
-        <div class="search-container" style="margin-top:10px;">
-            <div class="input-label"><i class="fa-solid fa-chart-pie"></i> System Health</div>
-            <div class="profile-detail"><span>API Server</span><span style="color:var(--green);">Operational</span></div>
-            <div class="profile-detail"><span>Database</span><span style="color:var(--green);">Connected</span></div>
-            <div class="profile-detail" style="border:none;"><span>Latency</span><span>~120ms</span></div>
-        </div>
-    </div>
-
-    <!-- PAGE 5: PROFILE -->
-    <div id="page-profile" class="page">
-        <div class="page-title"><i class="fa-solid fa-user"></i> My Profile</div>
-        <div class="profile-card">
-            <div class="profile-avatar"><i class="fa-solid fa-user-secret"></i></div>
-            <h3>Rajput User</h3>
-            <p>Premium License Active</p>
-            
-            <div class="profile-detail">
-                <span>License Key</span>
-                <span id="profKey">RAJPUT-PRO-1234</span>
-            </div>
-            <div class="profile-detail">
-                <span>Available Credits</span>
-                <span id="profCredits">0</span>
-            </div>
-            <div class="profile-detail" style="border:none;">
-                <span>App Version</span>
-                <span>3.0.0</span>
-            </div>
-
-            <button class="logout-btn" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-        </div>
-    </div>
-
+<section class="search-panel">
+<div class="panel-title">QUERY CONSOLE <span><i class="fa-solid fa-circle"></i> READY</span></div>
+<div class="tabs">
+<button class="tab active" data-type="tg-id" type="button">TELEGRAM ID</button>
+<button class="tab" data-type="tg-user" type="button">USERNAME</button>
+<button class="tab" data-type="phone" type="button">PHONE INFO</button>
 </div>
+<div class="input-wrap"><i class="fa-solid fa-terminal"></i><input id="searchInput" type="text" placeholder="Enter Telegram ID..." autocomplete="off"></div>
+<button class="search-btn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> SEARCH NOW <i class="fa-solid fa-angles-right"></i></button>
 
-<!-- BOTTOM NAV -->
-<div class="bottom-nav">
-    <a class="nav-item active" onclick="switchPage('home', this)"><i class="fa-solid fa-house"></i> Home</a>
-    <a class="nav-item" onclick="switchPage('history', this)"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
-    <a class="nav-item" onclick="switchPage('favorites', this)"><i class="fa-solid fa-star"></i> Favorites</a>
-    <a class="nav-item" onclick="switchPage('dashboard', this)"><i class="fa-solid fa-chart-simple"></i> Dashboard</a>
-    <a class="nav-item" onclick="switchPage('profile', this)"><i class="fa-solid fa-user"></i> Profile</a>
+<div class="results" id="results">
+    <h3>
+        <span><i class="fa-solid fa-circle-info"></i> INTELLIGENCE REPORT</span>
+        <div class="action-btns">
+            <button onclick="copyResults()" id="copyBtn"><i class="fa-solid fa-copy"></i> Copy</button>
+            <button onclick="downloadResults()"><i class="fa-solid fa-download"></i> .txt</button>
+        </div>
+    </h3>
+    <div id="resultContent"></div>
+</div>
+</section>
+
+<footer><b>RAJPUT INFO 3.0</b>POWERED BY RESPONSIBLE OSINT</footer>
 </div>
 
 <script>
-/* ---------- MATRIX RAIN ---------- */
-(function(){
-    const c = document.getElementById('matrix'); const ctx = c.getContext('2d');
-    const chars = 'アカサタナハマヤラワabcdefghijklmnopqrstuvwxyz0123456789<>[]{}=+*#$%&@';
-    const fontSize = 14; let cols, drops, w, h;
-    function resize(){ w = c.width = window.innerWidth; h = c.height = window.innerHeight; cols = Math.floor(w / fontSize); drops = Array(cols).fill(1); }
-    resize(); window.addEventListener('resize', resize);
-    function draw(){
-        ctx.fillStyle = 'rgba(5,5,5,0.1)'; ctx.fillRect(0, 0, w, h); ctx.font = fontSize + 'px monospace';
-        for (let i = 0; i < drops.length; i++){
-            const ch = chars[Math.floor(Math.random() * chars.length)];
-            ctx.fillStyle = Math.random() > 0.985 ? '#F5C842' : '#D4AF37';
-            ctx.fillText(ch, i * fontSize, drops[i] * fontSize);
-            if (drops[i] * fontSize > h && Math.random() > 0.975) drops[i] = 0;
-            drops[i]++;
-        }
-    }
-    setInterval(draw, 55);
-})();
+// Matrix Rain
+const canvas=document.getElementById('matrix'),ctx=canvas.getContext('2d');
+let cols,drops;
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight;cols=Math.floor(canvas.width/18);drops=Array(cols).fill(1);}
+resize();addEventListener('resize',resize);
+function draw(){ctx.fillStyle='rgba(0,0,0,.08)';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.fillStyle='#00ff59';ctx.font='14px monospace';
+for(let i=0;i<drops.length;i++){let ch=Math.random()>0.5?'1':'0';ctx.fillText(ch,i*18,drops[i]*18);if(drops[i]*18>canvas.height&&Math.random()>.975)drops[i]=0;drops[i]++;}}
+setInterval(draw,70);
 
-/* ---------- NAVIGATION LOGIC ---------- */
-function switchPage(pageId, btn) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + pageId).classList.add('active');
-    
-    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    // Refresh specific pages when opened
-    if(pageId === 'history') renderHistory();
-    if(pageId === 'favorites') renderFavorites();
-    if(pageId === 'dashboard') renderDashboard();
-    if(pageId === 'profile') renderProfile();
-}
-
-/* ---------- LOCAL STORAGE DATA ---------- */
-function getStoredData(key) { return JSON.parse(localStorage.getItem(key)) || []; }
-function setStoredData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
-
-function updateStatsUI() {
-    // Credits from Android
-    let credits = 0;
-    if (window.AndroidBridge && window.AndroidBridge.getCredits) credits = window.AndroidBridge.getCredits();
-    document.getElementById('uiCredits').innerText = credits;
-    
-    // Search count from localStorage
-    let totalSearches = localStorage.getItem('totalSearches') || 0;
-    document.getElementById('uiSearches').innerText = totalSearches;
-}
-
-/* ---------- APP LOGIC ---------- */
-let currentTab = 'phone';
-let currentReportText = '';
-let currentSearchQuery = '';
+// Logic
+let searchType='tg-id';
+let reportText='';
 const myWorkerUrl = 'https://dawn-feather-771c.dipakrajput55447.workers.dev/?url=';
+
+document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    searchType=tab.dataset.type;
+    const input = document.getElementById('searchInput');
+    if(searchType === 'tg-id') input.placeholder='Enter Telegram ID...';
+    if(searchType === 'tg-user') input.placeholder='Enter Username...';
+    if(searchType === 'phone') input.placeholder='Enter Phone Number...';
+    input.value = '';
+    document.getElementById('results').classList.remove('show');
+}));
 
 async function fetchWithProxy(targetUrl){
     try {
@@ -355,61 +160,40 @@ async function fetchWithProxy(targetUrl){
     } catch(e) { throw new Error("API Server is down."); }
 }
 
-function switchTab(tab, btn){
-    currentTab = tab;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const input = document.getElementById('searchInput');
-    const label = document.getElementById('searchLabel');
-    const icon = document.getElementById('searchIcon');
-    
-    if (tab === 'tg-id') { input.placeholder = "Enter 10-digit Telegram ID"; label.innerHTML = '<i class="fa-brands fa-telegram"></i> Enter Telegram ID'; icon.className = 'fa-brands fa-telegram'; }
-    if (tab === 'tg-user') { input.placeholder = "Enter Telegram Username"; label.innerHTML = '<i class="fa-solid fa-user"></i> Enter Username'; icon.className = 'fa-solid fa-user'; }
-    if (tab === 'phone') { input.placeholder = "+91 98765 43210"; label.innerHTML = '<i class="fa-solid fa-phone"></i> Enter Phone Number'; icon.className = 'fa-solid fa-phone'; }
-    
-    input.value = ""; document.getElementById('resultBox').classList.remove('active');
-}
-
-function handleEnter(e){ if (e.key === 'Enter') performSearch(); }
-
 function esc(v){ return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
 async function performSearch(){
     let query = document.getElementById('searchInput').value.trim();
-    if (!query) return alert("Please enter a query.");
+    if(!query){ document.getElementById('searchInput').focus(); return; }
 
-    if (window.AndroidBridge && window.AndroidBridge.isMaintenance && window.AndroidBridge.isMaintenance()) return alert("App is under maintenance.");
-    if (window.AndroidBridge) {
-        if (!window.AndroidBridge.useCredit()) return alert("Out of credits! Contact Admin: @AnonymouschatbotR");
-        updateStatsUI();
-    }
-
-    if (currentTab === 'tg-user' && query.startsWith('@')) query = query.substring(1);
-    if (currentTab === 'phone' && /^\d{10}$/.test(query)) query = '+91' + query;
+    if (searchType === 'tg-user' && query.startsWith('@')) query = query.substring(1);
+    if (searchType === 'phone' && /^\d{10}$/.test(query)) query = '+91' + query;
 
     const btn = document.getElementById('searchBtn');
-    const resultBox = document.getElementById('resultBox');
-    const resultData = document.getElementById('resultData');
-    const errorMsg = document.getElementById('errorMsg');
+    const results = document.getElementById('results');
+    const resContent = document.getElementById('resultContent');
 
-    btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Fetching...';
-    resultBox.classList.remove('active'); errorMsg.classList.remove('active'); resultData.innerHTML = "";
-    currentReportText = ""; currentSearchQuery = query;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> PROCESSING...';
+    results.classList.remove('show');
+    resContent.innerHTML = '';
+    reportText = '';
     const htmlParts = [];
 
     try {
-        if (currentTab === 'tg-id' || currentTab === 'tg-user'){
+        if (searchType === 'tg-id' || searchType === 'tg-user') {
             let finalId = query;
-            currentReportText += `RAJPUT INFO — REPORT\nMode: ${currentTab}\nQuery: ${query}\n----------------------------------------\n\n`;
+            reportText += `RAJPUT INFO — REPORT\nMode: ${searchType}\nQuery: ${query}\n--------------------------------\n\n`;
 
-            if (currentTab === 'tg-user'){
+            if (searchType === 'tg-user') {
                 const idJson = await fetchWithProxy(`https://osint.invalidayushh.workers.dev/id?key=Rajpoot2.0&q=${encodeURIComponent(query)}`);
-                if (idJson.success && idJson.result && idJson.result.data && idJson.result.data.id){
+                if (idJson.success && idJson.result && idJson.result.data && idJson.result.data.id) {
                     finalId = String(idJson.result.data.id);
-                    currentReportText += `Resolved ID: ${finalId}\nIs Premium: ${idJson.result.data.is_premium}\n\n`;
+                    const d = idJson.result.data;
+                    reportText += `Resolved ID: ${finalId}\nIs Premium: ${d.is_premium}\n\n`;
                     htmlParts.push(`<div class="data-group"><h4>Resolved Identity</h4>
                         <div class="data-row"><span class="data-lbl">Resolved ID</span><span class="data-val">${esc(finalId)}</span></div>
-                        <div class="data-row"><span class="data-lbl">Is Premium</span><span class="data-val">${esc(idJson.result.data.is_premium)}</span></div>
+                        <div class="data-row"><span class="data-lbl">Is Premium</span><span class="data-val">${esc(d.is_premium)}</span></div>
                     </div>`);
                 } else { throw new Error("Username not found."); }
             }
@@ -427,28 +211,28 @@ async function performSearch(){
             if (d.country) rows.push(['Country', d.country]);
             
             if (rows.length === 0) throw new Error("No usable data returned.");
-            for (const [k, v] of rows){
+            for (const [k, v] of rows) {
                 mainCard += `<div class="data-row"><span class="data-lbl">${esc(k)}</span><span class="data-val">${esc(v)}</span></div>`;
-                currentReportText += `${k}: ${v}\n`;
+                reportText += `${k}: ${v}\n`;
             }
             htmlParts.push(mainCard + `</div>`);
         }
-        else if (currentTab === 'phone'){
+        else if (searchType === 'phone') {
             const json = await fetchWithProxy(`https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${encodeURIComponent(query)}`);
             if (!(json.status && json.data && Object.keys(json.data).length > 0)) throw new Error("No data found.");
 
-            currentReportText += `RAJPUT INFO — REPORT\nMode: Phone Info\nQuery: ${query}\n----------------------------------------\n\n`;
-            for (const key in json.data){
+            reportText += `RAJPUT INFO — REPORT\nMode: Phone Info\nQuery: ${query}\n--------------------------------\n\n`;
+            for (const key in json.data) {
                 const source = json.data[key];
                 let block = `<div class="data-group"><h4>${esc(source.title || key)}</h4>`;
-                currentReportText += `=== ${source.title} ===\n`;
-                if (source.records && source.records.length > 0){
-                    source.records.forEach((record) => {
-                        block += `<div style="margin-bottom:10px; border-bottom:1px dashed #333; padding-bottom:10px;">`;
-                        for (const field in record){
-                            if (record[field] !== null && record[field] !== undefined && record[field] !== ''){
+                reportText += `=== ${source.title} ===\n`;
+                if (source.records && source.records.length > 0) {
+                    source.records.forEach((record, index) => {
+                        block += `<div style="margin-bottom:10px;">`;
+                        for (const field in record) {
+                            if (record[field] !== null && record[field] !== undefined && record[field] !== '') {
                                 block += `<div class="data-row"><span class="data-lbl">${esc(field)}</span><span class="data-val">${esc(record[field])}</span></div>`;
-                                currentReportText += `  ${field}: ${record[field]}\n`;
+                                reportText += `  ${field}: ${record[field]}\n`;
                             }
                         }
                         block += `</div>`;
@@ -457,136 +241,43 @@ async function performSearch(){
                 htmlParts.push(block + `</div>`);
             }
         }
-        
-        resultData.innerHTML = htmlParts.join('');
-        resultBox.classList.add('active');
-        
-        // Save to History
-        let history = getStoredData('searchHistory');
-        history.unshift({ query: query, type: currentTab, time: new Date().toLocaleString() });
-        if (history.length > 50) history.pop(); // max 50
-        setStoredData('searchHistory', history);
-        
-        // Update total searches
-        let total = parseInt(localStorage.getItem('totalSearches') || 0) + 1;
-        localStorage.setItem('totalSearches', total);
-        updateStatsUI();
 
-    } catch (err){
-        errorMsg.innerText = err.message;
-        errorMsg.classList.add('active');
+        resContent.innerHTML = htmlParts.join('');
+        results.classList.add('show');
+    } catch(err) {
+        resContent.innerHTML = `<p class="error-text"><i class="fa-solid fa-triangle-exclamation"></i> ${esc(err.message)}</p>`;
+        results.classList.add('show');
     } finally {
-        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Search Now <i class="fa-solid fa-angles-right"></i>';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> SEARCH NOW <i class="fa-solid fa-angles-right"></i>';
     }
 }
 
-/* ---------- ACTIONS (Copy, Download, Favorite) ---------- */
+document.getElementById('searchBtn').addEventListener('click', performSearch);
+document.getElementById('searchInput').addEventListener('keydown', e => { if(e.key === 'Enter') performSearch(); });
+
 function copyResults(){
-    if (!currentReportText) return;
-    navigator.clipboard.writeText(currentReportText).then(() => {
-        const btn = document.getElementById('copyBtn'); const old = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    if(!reportText) return;
+    navigator.clipboard.writeText(reportText).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const old = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
         setTimeout(() => { btn.innerHTML = old; }, 2000);
     });
 }
 
 function downloadResults(){
-    if (!currentReportText) return;
-    const filename = `RajputInfo_${currentTab}_${Date.now()}.txt`;
+    if(!reportText) return;
+    const filename = `RajputInfo_${searchType}_${Date.now()}.txt`;
     if (window.AndroidBridge && window.AndroidBridge.saveFile) {
-        window.AndroidBridge.saveFile(filename, currentReportText); return;
+        window.AndroidBridge.saveFile(filename, reportText);
+        return;
     }
-    const blob = new Blob([currentReportText], { type: 'text/plain;charset=utf-8' });
+    const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
 }
-
-function saveFavorite(){
-    if (!currentReportText) return;
-    let favs = getStoredData('favorites');
-    let exists = favs.some(f => f.query === currentSearchQuery);
-    if (exists) return alert("Already in favorites!");
-    
-    favs.unshift({ query: currentSearchQuery, type: currentTab, time: new Date().toLocaleString(), data: currentReportText });
-    setStoredData('favorites', favs);
-    alert("⭐ Saved to Favorites!");
-}
-
-/* ---------- RENDER PAGES ---------- */
-function renderHistory(){
-    const list = document.getElementById('historyList');
-    let history = getStoredData('searchHistory');
-    
-    if (history.length === 0) {
-        list.innerHTML = `<div class="empty-state"><i class="fa-solid fa-clock-rotate-left"></i><br>No History Found</div>`;
-        return;
-    }
-    list.innerHTML = history.map(h => `
-        <div class="history-card">
-            <div class="history-info">
-                <h4>${esc(h.query)}</h4>
-                <p>${esc(h.type.toUpperCase())} • ${esc(h.time)}</p>
-            </div>
-        </div>
-    `).join('');
-}
-
-function renderFavorites(){
-    const list = document.getElementById('favoritesList');
-    let favs = getStoredData('favorites');
-    
-    if (favs.length === 0) {
-        list.innerHTML = `<div class="empty-state"><i class="fa-regular fa-star"></i><br>No Favorites Saved</div>`;
-        return;
-    }
-    list.innerHTML = favs.map(f => `
-        <div class="history-card">
-            <div class="history-info">
-                <h4>⭐ ${esc(f.query)}</h4>
-                <p>${esc(f.type.toUpperCase())} • ${esc(f.time)}</p>
-            </div>
-            <button class="btn-sm" onclick="viewFav('${esc(f.query)}')">View</button>
-        </div>
-    `).join('');
-}
-
-function viewFav(query) {
-    switchPage('home', document.querySelector('.nav-item'));
-    document.getElementById('searchInput').value = query;
-    // User can manually search
-}
-
-function renderDashboard(){
-    document.getElementById('dashTotalSearches').innerText = localStorage.getItem('totalSearches') || 0;
-    let credits = 0;
-    if (window.AndroidBridge && window.AndroidBridge.getCredits) credits = window.AndroidBridge.getCredits();
-    document.getElementById('dashTotalCredits').innerText = credits;
-}
-
-function renderProfile(){
-    let credits = 0;
-    if (window.AndroidBridge && window.AndroidBridge.getCredits) credits = window.AndroidBridge.getCredits();
-    document.getElementById('profCredits').innerText = credits;
-    // Mock key for now (or get from Android bridge if added)
-    document.getElementById('profKey').innerText = "RAJPUT-PRO-ACTIVE";
-}
-
-function logoutUser() {
-    if(confirm("Are you sure you want to logout and clear data?")) {
-        localStorage.clear();
-        if(window.AndroidBridge && window.AndroidBridge.logout) {
-            window.AndroidBridge.logout();
-        } else {
-            alert("Logged out. Please restart the app.");
-        }
-    }
-}
-
-/* Init */
-document.addEventListener("DOMContentLoaded", () => {
-    updateStatsUI();
-});
 </script>
 </body>
 </html>
