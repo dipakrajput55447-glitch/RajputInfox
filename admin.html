@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RAJPUT INFO — Admin</title>
+<style>
+*{box-sizing:border-box}
+body{background:#030603;color:#e8f1e9;font-family:'Courier New',monospace;padding:16px;max-width:900px;margin:auto;font-size:13px}
+h1{color:#00ff59;font-size:18px;letter-spacing:2px;margin:0 0 16px}
+h2{color:#00ff59;font-size:13px;letter-spacing:1px;margin:24px 0 8px;border-bottom:1px solid #173522;padding-bottom:6px}
+input,select,button{font-family:inherit;font-size:13px}
+input,select{width:100%;padding:10px;background:#07120a;border:1px solid #21432b;color:#fff;border-radius:6px;margin:4px 0;outline:none}
+input:focus,select:focus{border-color:#00ff59}
+button{padding:10px 14px;background:#00ff59;color:#001707;font-weight:bold;cursor:pointer;letter-spacing:1px;border:0;border-radius:6px;margin:4px 4px 4px 0}
+button:hover{opacity:.9}
+button.alt{background:#07120a;color:#00ff59;border:1px solid #00ff59}
+button.danger{background:#7a1a1a;color:#ffbbbb;border:1px solid #ff4444}
+button.small{padding:5px 8px;font-size:11px;letter-spacing:0;margin:2px 2px 2px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.col{flex:1;min-width:140px}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12px}
+th,td{padding:8px 6px;text-align:left;border-bottom:1px solid #173522}
+th{color:#00ff59;font-size:10px;letter-spacing:1px;text-transform:uppercase}
+td.actions{white-space:nowrap}
+pre{background:#07120a;padding:12px;border-radius:6px;overflow-x:auto;font-size:12px;border:1px solid #173522;color:#bdcabe}
+.ok{color:#00ff59}
+.err{color:#ff6666}
+.pill{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;letter-spacing:1px}
+.pill.active{background:#0a3d1c;color:#00ff59}
+.pill.disabled{background:#3d0a0a;color:#ff6666}
+.pill.expired{background:#3d280a;color:#ffbb44}
+.pill.soon{background:#3d280a;color:#ffbb44}
+</style></head><body>
+<h1>▌ RAJPUT INFO — ADMIN PANEL</h1>
+
+<input id="key" type="password" placeholder="Admin Key" style="margin-bottom:16px">
+
+<h2>Create User</h2>
+<div class="row">
+<div class="col"><input id="newUser" placeholder="Username (blank = auto)"></div>
+<div class="col"><input id="newPass" placeholder="Password (blank = auto)"></div>
+</div>
+<div class="row">
+<div class="col">
+<select id="newPlan">
+<option value="1m|30">1 month (30 days)</option>
+<option value="2m|60">2 months (60 days)</option>
+<option value="3m|90">3 months (90 days)</option>
+<option value="6m|180">6 months (180 days)</option>
+<option value="1y|365">1 year (365 days)</option>
+<option value="custom|0">Custom days…</option>
+</select>
+</div>
+<div class="col"><input id="newCustomDays" type="number" min="1" max="3650" placeholder="Custom days (if custom)" style="display:none"></div>
+<div class="col"><input id="newNotes" placeholder="Notes (optional)"></div>
+</div>
+<button onclick="createUser()">GENERATE USER</button>
+<div id="createOut" style="margin-top:10px"></div>
+
+<h2>Users</h2>
+<div class="row" style="margin-bottom:8px">
+<div class="col"><select id="extendDur">
+<option value="30">+1 month</option>
+<option value="60">+2 months</option>
+<option value="90">+3 months</option>
+<option value="180">+6 months</option>
+<option value="365">+1 year</option>
+<option value="custom">+custom days…</option>
+</select></div>
+<button class="alt" onclick="refreshList()">REFRESH LIST</button>
+</div>
+<div id="listOut">// click REFRESH LIST</div>
+
+<pre id="out"></pre>
+
+<script>
+(function(){
+  var keyEl = document.getElementById('key');
+  keyEl.value = localStorage.getItem('adminKey') || '';
+  keyEl.onchange = function(){ localStorage.setItem('adminKey', keyEl.value); };
+
+  var newPlan = document.getElementById('newPlan');
+  var newCustom = document.getElementById('newCustomDays');
+  newPlan.onchange = function(){
+    newCustom.style.display = this.value === 'custom|0' ? 'block' : 'none';
+  };
+
+  var extendDur = document.getElementById('extendDur');
+
+  function show(x){
+    var el = document.getElementById('out');
+    el.textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2);
+  }
+  window.show = show;
+
+  function api(path, body, method){
+    method = method || 'POST';
+    return fetch(path, {
+      method: method,
+      headers: {'Content-Type':'application/json','X-Admin-Key': keyEl.value},
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function(r){ return r.json(); });
+  }
+  window.api = api;
+
+  window.createUser = function(){
+    var u = document.getElementById('newUser').value.trim();
+    var p = document.getElementById('newPass').value;
+    var planVal = newPlan.value;
+    var days;
+    var planLabel;
+    if (planVal === 'custom|0') {
+      days = parseInt(newCustom.value, 10);
+      planLabel = 'custom ' + days + 'd';
+    } else {
+      var parts = planVal.split('|');
+      planLabel = parts[0];
+      days = parseInt(parts[1], 10);
+    }
+    if (!days || days < 1) { show('Invalid duration'); return; }
+    var notes = document.getElementById('newNotes').value.trim();
+    api('/api/admin/create-user', {username:u, password:p, days:days, plan:planLabel, notes:notes}).then(function(res){
+      var out = document.getElementById('createOut');
+      if (res.ok) {
+        out.innerHTML = '<pre class="ok">CREATED\\nID: ' + res.username + '\\nPASS: ' + res.password + '\\nPLAN: ' + res.plan + '\\nEXPIRES: ' + new Date(res.expiresAt).toLocaleString() + '</pre>';
+        document.getElementById('newUser').value = '';
+        document.getElementById('newPass').value = '';
+        document.getElementById('newNotes').value = '';
+      } else {
+        out.innerHTML = '<span class="err">' + (res.error || 'error') + '</span>';
+      }
+    });
+  };
+
+  window.refreshList = function(){
+    api('/api/admin/list', null, 'GET').then(function(res){
+      if (!res.ok) { document.getElementById('listOut').innerHTML = '<span class="err">' + (res.error || 'error') + '</span>'; return; }
+      var html = '<table><thead><tr><th>USER</th><th>PLAN</th><th>EXPIRES</th><th>DAYS</th><th>DEVICE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>';
+      res.users.forEach(function(u){
+        var status = !u.active ? '<span class="pill disabled">DISABLED</span>' :
+                     u.expires_at && u.days_left <= 0 ? '<span class="pill expired">EXPIRED</span>' :
+                     u.days_left !== null && u.days_left <= 3 ? '<span class="pill soon">' + u.days_left + 'd LEFT</span>' :
+                     '<span class="pill active">ACTIVE</span>';
+        var exp = u.expires_at ? new Date(u.expires_at).toLocaleDateString() : '—';
+        var dev = u.device_label || '—';
+        html += '<tr>' +
+          '<td><b>' + u.username + '</b></td>' +
+          '<td>' + (u.plan || '—') + '</td>' +
+          '<td>' + exp + '</td>' +
+          '<td>' + (u.days_left === null ? '∞' : u.days_left) + '</td>' +
+          '<td>' + dev + '</td>' +
+          '<td>' + status + '</td>' +
+          '<td class="actions">' +
+            '<button class="small alt" onclick="doExtend(\\'' + u.username + '\\')">EXT</button>' +
+            '<button class="small alt" onclick="doUnbind(\\'' + u.username + '\\')">UNBIND</button>' +
+            '<button class="small alt" onclick="doReset(\\'' + u.username + '\\')">PW</button>' +
+            '<button class="small alt" onclick="doDisable(\\'' + u.username + '\\',' + (u.active ? 'false' : 'true') + ')">' + (u.active ? 'DIS' : 'EN') + '</button>' +
+            '<button class="small danger" onclick="doDelete(\\'' + u.username + '\\')">DEL</button>' +
+          '</td></tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('listOut').innerHTML = html;
+    });
+  };
+
+  window.doExtend = function(username){
+    var v = extendDur.value;
+    var days;
+    if (v === 'custom') {
+      days = parseInt(prompt('Days to add?'), 10);
+      if (!days || days < 1) return;
+    } else {
+      days = parseInt(v, 10);
+    }
+    api('/api/admin/extend', {username:username, days:days, plan: '+' + days + 'd'}).then(function(res){
+      show(res);
+      if (res.ok) refreshList();
+    });
+  };
+
+  window.doUnbind = function(username){
+    if (!confirm('Unbind device for ' + username + '?')) return;
+    api('/api/admin/unbind', {username:username}).then(function(res){ show(res); if (res.ok) refreshList(); });
+  };
+
+  window.doReset = function(username){
+    var np = prompt('New password for ' + username + ' (blank = auto)');
+    if (np === null) return;
+    api('/api/admin/reset-password', {username:username, password:np}).then(function(res){ show(res); if (res.ok) alert('New password: ' + res.password); });
+  };
+
+  window.doDisable = function(username, active){
+    api('/api/admin/disable', {username:username, active:active}).then(function(res){ show(res); if (res.ok) refreshList(); });
+  };
+
+  window.doDelete = function(username){
+    if (!confirm('DELETE user ' + username + '? This cannot be undone.')) return;
+    api('/api/admin/delete', {username:username}).then(function(res){ show(res); if (res.ok) refreshList(); });
+  };
+})();
+</script>
+</body></html>
