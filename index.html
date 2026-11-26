@@ -1,255 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rajput Info - Premium OSINT</title>
-    <style>
-        :root { --bg: #050505; --surface: #111111; --gold: #D4AF37; --text: #F5F5F5; --error: #E53935; --border: #333333; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); text-align: center; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .logo { font-size: 3rem; margin-top: 20px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
-        h1 { color: var(--gold); font-size: 2.2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
-        p.subtitle { font-size: 1rem; color: #888; margin-bottom: 30px; letter-spacing: 1px; }
-        .container { width: 100%; max-width: 650px; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .tab-btn { background: none; border: none; color: #888; font-size: 0.95rem; font-weight: bold; cursor: pointer; padding: 10px; transition: 0.3s; border-radius: 5px; }
-        .tab-btn:hover { color: var(--gold); }
-        .tab-btn.active { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
-        .input-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
-        input { width: 100%; padding: 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-        .search-btn { background: var(--gold); color: #000; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
-        .search-btn:hover { background: #F5C842; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
-        .search-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
-        .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; max-height: 500px; overflow-y: auto; }
-        .result-box.active { display: block; animation: fadeIn 0.4s ease; }
-        .result-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
-        .result-header h3 { color: var(--gold); font-size: 1.2rem; margin: 0; }
-        .copy-btn { background: var(--gold); color: #000; border: none; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: 0.3s; }
-        .copy-btn:hover { background: #F5C842; }
-        .source-group { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; padding: 15px; }
-        .source-title { color: var(--gold); font-size: 1.1rem; margin-bottom: 10px; border-bottom: 1px dashed var(--border); padding-bottom: 5px; }
-        .source-desc { color: #aaa; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.4; }
-        .record-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
-        .record-card:last-child { margin-bottom: 0; }
-        .record-card h5 { color: var(--gold); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
-        .data-row { margin-bottom: 8px; font-size: 0.9rem; padding: 6px; background: var(--surface); border-radius: 4px; border-left: 3px solid var(--gold); }
-        .data-label { color: var(--gold); font-weight: bold; display: block; margin-bottom: 2px; font-size: 0.75rem; text-transform: uppercase; }
-        .data-value { color: #ddd; font-family: monospace; word-break: break-all; white-space: pre-wrap; }
-        .error-msg { color: var(--error); font-weight: bold; text-align: center; display: none; margin-top: 15px; background: rgba(229, 57, 53, 0.1); padding: 15px; border-radius: 5px; border: 1px solid rgba(229, 57, 53, 0.3); }
-        .error-msg.active { display: block; animation: fadeIn 0.3s ease; }
-        .loading { color: var(--gold); display: none; margin-top: 15px; font-style: italic; font-weight: bold; }
-        .loading.active { display: block; animation: pulse 1.5s infinite; }
-        .telegram-join { margin-top: 40px; display: inline-block; text-decoration: none; color: #000; background: var(--gold); padding: 12px 30px; border-radius: 30px; font-weight: bold; transition: 0.3s; }
-        .telegram-join:hover { background: #F5C842; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rajput Info — Premium OSINT</title>
+<style>
+:root{--bg:#050505;--surface:#0d0d0d;--glass:rgba(13,13,13,.78);--gold:#D4AF37;--gold-hi:#F5C842;--text:#F5F5F5;--dim:#888;--error:#E53935;--border:#2a2a2a;--green:#4ade80;}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;}
+html,body{min-height:100%;}
+body{background:var(--bg);color:var(--text);text-align:center;min-height:100vh;padding:20px;display:flex;flex-direction:column;align-items:center;position:relative;overflow-x:hidden;}
+
+/* Matrix rain */
+#matrix{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.28;pointer-events:none;}
+
+/* Scanline overlay */
+body::after{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0px,rgba(0,0,0,.18) 1px,transparent 1px,transparent 3px);pointer-events:none;z-index:1;opacity:.35;}
+
+.wrap{position:relative;z-index:2;width:100%;max-width:800px;display:flex;flex-direction:column;align-items:center;}
+
+/* Boot terminal */
+#boot{font-family:'Courier New',monospace;font-size:.78rem;color:var(--green);text-align:left;background:rgba(0,0,0,.85);border:1px solid #1a3d2a;border-radius:8px;padding:14px 16px;width:100%;max-width:800px;margin-bottom:20px;min-height:90px;box-shadow:0 0 25px rgba(74,222,128,.12);}
+#boot .cursor{display:inline-block;width:8px;height:12px;background:var(--green);animation:blink 1s steps(1) infinite;vertical-align:middle;margin-left:2px;}
+@keyframes blink{50%{opacity:0;}}
+
+.logo{font-size:3rem;margin-top:10px;margin-bottom:6px;text-shadow:0 0 25px rgba(212,175,55,.65),0 0 60px rgba(212,175,55,.25);animation:float 4s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+h1{color:var(--gold);font-size:2.2rem;text-transform:uppercase;letter-spacing:3px;font-weight:800;text-shadow:0 0 30px rgba(212,175,55,.4);}
+.subtitle{font-size:.85rem;color:var(--dim);margin-bottom:8px;letter-spacing:2px;text-transform:uppercase;font-family:'Courier New',monospace;}
+.owner{margin-bottom:26px;font-size:.8rem;color:var(--dim);font-family:'Courier New',monospace;letter-spacing:1px;}
+.owner #ownerName{color:var(--gold);font-weight:bold;text-shadow:0 0 12px rgba(212,175,55,.7);border-right:2px solid var(--gold);padding-right:3px;animation:caret .8s steps(1) infinite;}
+@keyframes caret{50%{border-color:transparent;}}
+
+.container{width:100%;max-width:800px;background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:16px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.03);}
+.tabs{display:flex;justify-content:space-around;margin-bottom:24px;border-bottom:1px solid var(--border);padding-bottom:10px;flex-wrap:wrap;gap:8px;}
+.tab-btn{background:none;border:none;color:var(--dim);font-size:.9rem;font-weight:bold;cursor:pointer;padding:10px 14px;transition:.3s;border-radius:6px;letter-spacing:.5px;}
+.tab-btn:hover{color:var(--gold);}
+.tab-btn.active{color:var(--gold);background:rgba(212,175,55,.1);box-shadow:inset 0 0 0 1px rgba(212,175,55,.3);}
+.input-group{display:flex;flex-direction:column;gap:14px;margin-bottom:8px;}
+input{width:100%;padding:15px;background:#080808;border:1px solid var(--border);border-radius:8px;color:#fff;font-size:1rem;outline:none;transition:.3s;font-family:'Courier New',monospace;}
+input:focus{border-color:var(--gold);box-shadow:0 0 15px rgba(212,175,55,.25),inset 0 0 8px rgba(212,175,55,.05);}
+.search-btn{background:linear-gradient(135deg,var(--gold),var(--gold-hi));color:#000;padding:15px;border:none;border-radius:8px;font-size:1.05rem;font-weight:800;cursor:pointer;text-transform:uppercase;letter-spacing:2px;transition:.3s;box-shadow:0 4px 20px rgba(212,175,55,.35);}
+.search-btn:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(212,175,55,.5);}
+.search-btn:disabled{background:#444;color:#888;cursor:not-allowed;transform:none;box-shadow:none;}
+
+.result-box{background:#080808;border:1px solid var(--border);border-radius:12px;padding:20px;text-align:left;display:none;margin-top:20px;max-height:620px;overflow-y:auto;}
+.result-box.active{display:block;animation:fadeIn .4s ease;}
+.result-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:16px;flex-wrap:wrap;gap:10px;position:sticky;top:-20px;background:#080808;padding-top:6px;z-index:5;}
+.result-header h3{color:var(--gold);font-size:1.1rem;letter-spacing:1px;}
+.btn-group{display:flex;gap:8px;}
+.action-btn{background:var(--gold);color:#000;border:none;padding:7px 14px;border-radius:6px;font-weight:bold;cursor:pointer;font-size:.82rem;transition:.3s;letter-spacing:.5px;}
+.action-btn:hover{background:var(--gold-hi);}
+.action-btn.alt{background:transparent;color:var(--gold);border:1px solid var(--gold);}
+.action-btn.alt:hover{background:var(--gold);color:#000;}
+.source-group{background:var(--surface);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;padding:15px;}
+.source-title{color:var(--gold);font-size:1.02rem;margin-bottom:10px;border-bottom:1px dashed var(--border);padding-bottom:6px;font-weight:bold;}
+.source-desc{color:#bbb;font-size:.82rem;margin-bottom:14px;line-height:1.55;white-space:pre-wrap;}
+.record-card{background:#050505;border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:14px;}
+.record-card:last-child{margin-bottom:0;}
+.record-card h5{color:var(--gold);margin-bottom:10px;font-size:.85rem;text-transform:uppercase;letter-spacing:1px;}
+.data-row{margin-bottom:7px;font-size:.88rem;padding:7px 9px;background:var(--surface);border-radius:5px;border-left:3px solid var(--gold);}
+.data-label{color:var(--gold);font-weight:bold;display:block;margin-bottom:2px;font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;}
+.data-value{color:#ddd;font-family:'Courier New',monospace;word-break:break-all;white-space:pre-wrap;}
+.empty-note{color:var(--dim);font-size:.85rem;text-align:center;padding:8px;}
+
+.error-msg{color:var(--error);font-weight:bold;text-align:center;display:none;margin-top:16px;background:rgba(229,57,53,.08);padding:15px;border-radius:8px;border:1px solid rgba(229,57,53,.35);}
+.error-msg.active{display:block;animation:fadeIn .3s ease;}
+.loading{color:var(--gold);display:none;margin-top:16px;font-style:italic;font-weight:bold;font-family:'Courier New',monospace;}
+.loading.active{display:block;animation:pulse 1.4s infinite;}
+.loading::after{content:"▋";animation:blink 1s steps(1) infinite;margin-left:4px;}
+@keyframes pulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+.telegram-join{margin-top:26px;display:inline-block;text-decoration:none;color:#000;background:linear-gradient(135deg,var(--gold),var(--gold-hi));padding:12px 30px;border-radius:30px;font-weight:bold;letter-spacing:1px;transition:.3s;box-shadow:0 4px 20px rgba(212,175,55,.35);}
+.telegram-join:hover{transform:translateY(-3px);box-shadow:0 8px 28px rgba(212,175,55,.55);}
+.dev-credit{margin-top:16px;color:var(--dim);font-size:.82rem;letter-spacing:.5px;font-family:'Courier New',monospace;}
+.dev-credit a{color:var(--gold);text-decoration:none;font-weight:bold;}
+.dev-credit a:hover{text-decoration:underline;}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:#333;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gold);}
+
+@media(max-width:600px){
+  h1{font-size:1.5rem;letter-spacing:2px;}
+  .logo{font-size:2.4rem;}
+  .container{padding:18px;}
+  .tab-btn{font-size:.8rem;padding:8px 10px;}
+  #boot{font-size:.7rem;}
+}
+</style>
 </head>
 <body>
+<canvas id="matrix"></canvas>
+
+<div class="wrap">
+    <div id="boot"></div>
+
     <div class="logo">👑</div>
     <h1>Rajput Info</h1>
-    <p class="subtitle">Premium OSINT & Intelligence Tool</p>
+    <p class="subtitle">Premium OSINT & Intelligence</p>
+    <p class="owner">owner · <span id="ownerName"></span></p>
+
     <div class="container">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('tg-id', this)">Telegram ID</button>
             <button class="tab-btn" onclick="switchTab('tg-user', this)">Username</button>
             <button class="tab-btn" onclick="switchTab('phone', this)">Phone Info</button>
         </div>
+
         <div class="input-group">
-            <input type="text" id="searchInput" placeholder="Enter Telegram ID (e.g. 1234567890)" onkeypress="handleEnter(event)">
+            <input type="text" id="searchInput" placeholder="Enter Telegram ID (e.g. 8125221004)" onkeypress="handleEnter(event)">
             <button class="search-btn" id="searchBtn" onclick="performSearch()">SEARCH</button>
         </div>
-        <div class="loading" id="loading">Fetching intelligence data...</div>
+
+        <div class="loading" id="loading">Fetching intelligence</div>
         <div class="error-msg" id="errorMsg"></div>
+
         <div class="result-box" id="resultBox">
             <div class="result-header">
-                <h3>Intelligence Report</h3>
-                <button class="copy-btn" id="copyBtn" onclick="copyResults()">Copy</button>
+                <h3>◆ INTELLIGENCE REPORT</h3>
+                <div class="btn-group">
+                    <button class="action-btn" id="copyBtn" onclick="copyResults()">Copy</button>
+                    <button class="action-btn alt" onclick="downloadResults()">Download .txt</button>
+                </div>
             </div>
             <div id="resultData"></div>
         </div>
     </div>
-    <a href="https://t.me/AnonymouschatbotR" class="telegram-join" target="_blank">Join Telegram Channel</a>
 
-    <script>
-        let currentTab = 'tg-id';
-        
-        // Tera custom Cloudflare Worker Link
-        const myWorkerUrl = 'https://dawn-feather-771c.dipakrajput55447.workers.dev/?url=';
+    <a href="https://t.me/rajputbioh" class="telegram-join" target="_blank">Join Telegram Channel</a>
+    <div class="dev-credit">Developer · <a href="https://t.me/AnonymouschatbotR" target="_blank">@AnonymouschatbotR</a></div>
+</div>
 
-        async function fetchWithProxy(targetUrl) {
-            try {
-                const res = await fetch(myWorkerUrl + encodeURIComponent(targetUrl));
-                const text = await res.text(); 
-                return JSON.parse(text); 
-            } catch (e) {
-                throw new Error("API Server is down or returned invalid data.");
-            }
+<script>
+/* ---------- MATRIX RAIN ---------- */
+(function(){
+    const c = document.getElementById('matrix');
+    const ctx = c.getContext('2d');
+    const chars = 'アカサタナハマヤラワabcdefghijklmnopqrstuvwxyz0123456789<>[]{}=+*#$%&@';
+    const fontSize = 14;
+    let cols, drops, w, h;
+
+    function resize(){
+        w = c.width = window.innerWidth;
+        h = c.height = window.innerHeight;
+        cols = Math.floor(w / fontSize);
+        drops = Array(cols).fill(1);
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function draw(){
+        ctx.fillStyle = 'rgba(5,5,5,0.08)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++){
+            const ch = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+            ctx.fillStyle = Math.random() > 0.985 ? '#F5C842' : '#D4AF37';
+            ctx.fillText(ch, x, y);
+            if (y > h && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
         }
+    }
+    setInterval(draw, 55);
+})();
 
-        function switchTab(tab, btn) {
-            currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const input = document.getElementById('searchInput');
-            if(tab === 'tg-id') input.placeholder = "Enter 10-digit Telegram ID";
-            if(tab === 'tg-user') input.placeholder = "Enter Telegram Username (without @)";
-            if(tab === 'phone') input.placeholder = "Enter 10-digit Number (e.g. 9876543210)";
-            input.value = "";
-            hideResults();
+/* ---------- BOOT TERMINAL ---------- */
+(function(){
+    const lines = [
+        '[  OK  ] mounting /dev/osint ...',
+        '[  OK  ] decrypting node keys ...',
+        '[  OK  ] spawning intel workers x4 ...',
+        '[  OK  ] secure tunnel established',
+        '> system ready. awaiting query.'
+    ];
+    const boot = document.getElementById('boot');
+    let li = 0, ci = 0, cur = '';
+    function type(){
+        if (li >= lines.length){
+            boot.innerHTML += '<span class="cursor"></span>';
+            return;
         }
+        const line = lines[li];
+        cur += line[ci] || '';
+        boot.innerHTML = (li > 0 ? '<br>' : '') + boot.innerHTML.split('<br>').slice(0, li).join('<br>');
+        // simpler: rebuild
+        let out = [];
+        for (let i = 0; i < li; i++) out.push(lines[i]);
+        out.push(cur);
+        boot.innerHTML = out.join('<br>') + '<span class="cursor"></span>';
+        ci++;
+        if (ci > line.length){ li++; ci = 0; cur = ''; setTimeout(type, 180); }
+        else setTimeout(type, 18);
+    }
+    type();
+})();
 
-        function handleEnter(e) { if (e.key === 'Enter') performSearch(); }
+/* ---------- CYCLING OWNER NAME ---------- */
+(function(){
+    const names = ['dipak rajput', 'Mr. Kanha', 'AnonymouschatbotR', 'rajput ops'];
+    const el = document.getElementById('ownerName');
+    let idx = 0, pos = 0, dir = 1;
+    function tick(){
+        const n = names[idx];
+        pos += dir;
+        el.textContent = n.substring(0, pos);
+        if (pos === n.length){ dir = -1; setTimeout(tick, 1600); return; }
+        if (pos === 0 && dir === -1){ dir = 1; idx = (idx + 1) % names.length; }
+        setTimeout(tick, dir === 1 ? 90 : 45);
+    }
+    tick();
+})();
 
-        function hideResults() {
-            document.getElementById('resultBox').classList.remove('active');
-            document.getElementById('errorMsg').classList.remove('active');
-            document.getElementById('errorMsg').innerText = "";
-            document.getElementById('copyBtn').innerText = "Copy";
-        }
+/* ---------- APP LOGIC ---------- */
+let currentTab = 'tg-id';
+let reportText = '';
+const myWorkerUrl = 'https://dawn-feather-771c.dipakrajput55447.workers.dev/?url=';
 
-        function copyResults() {
-            const textToCopy = document.getElementById('resultData').innerText;
-            if(!textToCopy) return;
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                const btn = document.getElementById('copyBtn');
-                btn.innerText = "Copied!";
-                setTimeout(() => { btn.innerText = "Copy"; }, 2000);
-            }).catch(err => alert("Failed to copy: " + err));
-        }
+async function fetchWithProxy(targetUrl){
+    try {
+        const res = await fetch(myWorkerUrl + encodeURIComponent(targetUrl));
+        const text = await res.text();
+        return JSON.parse(text);
+    } catch(e){
+        throw new Error("API Server is down or returned invalid data.");
+    }
+}
 
-        async function performSearch() {
-            let query = document.getElementById('searchInput').value.trim();
-            if(!query) return alert("Please enter a search query.");
+function switchTab(tab, btn){
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const input = document.getElementById('searchInput');
+    if (tab === 'tg-id') input.placeholder = "Enter 10-digit Telegram ID";
+    if (tab === 'tg-user') input.placeholder = "Enter Telegram Username (without @)";
+    if (tab === 'phone') input.placeholder = "Enter 10-digit Number (e.g. 9876543210)";
+    input.value = "";
+    hideResults();
+}
 
-            if (currentTab === 'tg-user' && query.startsWith('@')) {
-                query = query.substring(1);
-            }
+function handleEnter(e){ if (e.key === 'Enter') performSearch(); }
 
-            if (currentTab === 'phone' && /^\d{10}$/.test(query)) {
-                query = '+91' + query;
-            }
+function hideResults(){
+    document.getElementById('resultBox').classList.remove('active');
+    document.getElementById('errorMsg').classList.remove('active');
+    document.getElementById('errorMsg').innerText = "";
+    document.getElementById('copyBtn').innerText = "Copy";
+    reportText = "";
+}
 
-            const btn = document.getElementById('searchBtn');
-            const loading = document.getElementById('loading');
-            const resultBox = document.getElementById('resultBox');
-            const resultData = document.getElementById('resultData');
-            const errorMsg = document.getElementById('errorMsg');
+function copyResults(){
+    if (!reportText) return;
+    navigator.clipboard.writeText(reportText).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.innerText = "Copied!";
+        setTimeout(() => { btn.innerText = "Copy"; }, 2000);
+    }).catch(err => alert("Failed to copy: " + err));
+}
 
-            btn.disabled = true;
-            loading.classList.add('active');
-            hideResults();
-            resultData.innerHTML = "";
+function downloadResults(){
+    if (!reportText) return;
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `RajputInfo_${currentTab}_${stamp}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
 
-            try {
-                if (currentTab === 'tg-id' || currentTab === 'tg-user') {
-                    let finalData = {};
-                    let finalId = query;
+function esc(v){
+    return String(v)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
 
-                    if (currentTab === 'tg-user') {
-                        const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajpoot2.0&q=${query}`;
-                        const idJson = await fetchWithProxy(idUrl);
-                        
-                        if(idJson.result && idJson.result.data && idJson.result.data.id) {
-                            finalId = idJson.result.data.id;
-                            finalData["Resolved ID"] = finalId;
-                        } else {
-                            throw new Error("Username not found in database.");
-                        }
-                    }
+async function performSearch(){
+    let query = document.getElementById('searchInput').value.trim();
+    if (!query) return alert("Please enter a search query.");
 
-                    // FIX: Agar ID 9 digit ki hai, toh aage 0 laga do (taaki 10 digit ho jaye)
-                    if (finalId.length === 9 && /^\d+$/.test(finalId)) {
-                        finalId = '0' + finalId;
-                    }
+    if (currentTab === 'tg-user' && query.startsWith('@')) query = query.substring(1);
+    if (currentTab === 'phone' && /^\d{10}$/.test(query)) query = '+91' + query;
 
-                    const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajpoot2.0&q=${finalId}`;
-                    const json = await fetchWithProxy(dataUrl);
-                    
-                    if(json.success === false) {
-                        throw new Error(json.message || "API Error: Target not found or invalid ID format.");
-                    }
+    const btn = document.getElementById('searchBtn');
+    const loading = document.getElementById('loading');
+    const resultBox = document.getElementById('resultBox');
+    const resultData = document.getElementById('resultData');
+    const errorMsg = document.getElementById('errorMsg');
 
-                    if(json.success && json.data) {
-                        if(json.data._TARGET_ACQUIRED_) {
-                            finalData["Name"] = json.data._TARGET_ACQUIRED_.OPERATIVE_NAME || "Unknown";
-                            finalData["Operative ID"] = json.data._TARGET_ACQUIRED_.OPERATIVE_ID || "N/A";
-                        }
-                        if(json.data.results) {
-                            finalData["Country"] = json.data.results.country;
-                            finalData["Country Code"] = json.data.results.country_code;
-                            finalData["Phone Number"] = json.data.results.number;
-                            finalData["TG ID"] = json.data.results.tg_id;
-                        }
-                    } else { 
-                        throw new Error("No data found for this query."); 
-                    }
+    btn.disabled = true;
+    loading.classList.add('active');
+    hideResults();
+    resultData.innerHTML = "";
+    reportText = "";
+    const htmlParts = [];
 
-                    let hasData = false;
-                    for(let key in finalData) {
-                        if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
-                            resultData.innerHTML += `
-                                <div class="data-row">
-                                    <span class="data-label">${key}</span>
-                                    <span class="data-value">${finalData[key]}</span>
-                                </div>`;
-                            hasData = true;
-                        }
-                    }
-                    if(!hasData) throw new Error("No usable data returned.");
-                    
-                } else if (currentTab === 'phone') {
-                    const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`;
-                    const json = await fetchWithProxy(targetUrl);
-                    
-                    if(json.status && json.data && Object.keys(json.data).length > 0) {
-                        let htmlContent = "";
-                        for(let key in json.data) {
-                            let source = json.data[key];
-                            htmlContent += `<div class="source-group">`;
-                            htmlContent += `<h4 class="source-title">${source.title || key}</h4>`;
-                            
-                            if (source.description) {
-                                let shortDesc = source.description.length > 150 ? source.description.substring(0, 150) + "..." : source.description;
-                                htmlContent += `<p class="source-desc">${shortDesc}</p>`;
-                            }
-                            
-                            if (source.records && source.records.length > 0) {
-                                source.records.forEach((record, index) => {
-                                    htmlContent += `<div class="record-card">`;
-                                    htmlContent += `<h5>Record ${index + 1}</h5>`;
-                                    for (let field in record) {
-                                        if(record[field]) {
-                                            htmlContent += `
-                                                <div class="data-row">
-                                                    <span class="data-label">${field}</span>
-                                                    <span class="data-value">${record[field]}</span>
-                                                </div>`;
-                                        }
-                                    }
-                                    htmlContent += `</div>`;
-                                });
-                            } else {
-                                htmlContent += `<p style="color:#888; font-size:0.9rem;">No detailed records.</p>`;
-                            }
-                            htmlContent += `</div>`;
-                        }
-                        resultData.innerHTML = htmlContent;
-                    } else { 
-                        throw new Error("No data found for this phone number"); 
-                    }
+    try {
+        if (currentTab === 'tg-id' || currentTab === 'tg-user'){
+            let finalId = query;
+            reportText += `RAJPUT INFO — REPORT\n`;
+            reportText += `Mode: ${currentTab === 'tg-user' ? 'Username → Telegram ID' : 'Telegram ID Lookup'}\n`;
+            reportText += `Query: ${query}\n`;
+            reportText += `Generated: ${new Date().toUTCString()}\n`;
+            reportText += `----------------------------------------\n\n`;
+
+            if (currentTab === 'tg-user'){
+                const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajpoot2.0&q=${encodeURIComponent(query)}`;
+                const idJson = await fetchWithProxy(idUrl);
+
+                if (idJson.success && idJson.result && idJson.result.data && idJson.result.data.id){
+                    finalId = String(idJson.result.data.id);
+                    const d = idJson.result.data;
+                    reportText += `[ RESOLVED IDENTITY ]\n`;
+                    reportText += `Resolved ID: ${finalId}\n`;
+                    reportText += `Is Bot: ${d.is_bot}\n`;
+                    reportText += `Is Premium: ${d.is_premium}\n`;
+                    reportText += `Is Verified: ${d.is_verified}\n`;
+                    reportText += `Is Scam: ${d.is_scam}\n`;
+                    reportText += `Is Fake: ${d.is_fake}\n\n`;
+
+                    htmlParts.push(`<div class="source-group">
+                        <div class="source-title">Resolved Identity</div>
+                        <div class="record-card">
+                            <h5>Telegram Profile</h5>
+                            <div class="data-row"><span class="data-label">Resolved ID</span><span class="data-value">${esc(finalId)}</span></div>
+                            <div class="data-row"><span class="data-label">Is Bot</span><span class="data-value">${esc(d.is_bot)}</span></div>
+                            <div class="data-row"><span class="data-label">Is Premium</span><span class="data-value">${esc(d.is_premium)}</span></div>
+                            <div class="data-row"><span class="data-label">Is Verified</span><span class="data-value">${esc(d.is_verified)}</span></div>
+                            <div class="data-row"><span class="data-label">Is Scam</span><span class="data-value">${esc(d.is_scam)}</span></div>
+                            <div class="data-row"><span class="data-label">Is Fake</span><span class="data-value">${esc(d.is_fake)}</span></div>
+                        </div>
+                    </div>`);
+                } else {
+                    throw new Error("Username not found in database.");
                 }
-                resultBox.classList.add('active');
-            } catch (err) {
-                errorMsg.innerText = err.message;
-                errorMsg.classList.add('active');
-            } finally {
-                btn.disabled = false;
-                loading.classList.remove('active');
             }
+
+            if (/^\d{9}$/.test(finalId)) finalId = '0' + finalId;
+
+            const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajpoot2.0&q=${encodeURIComponent(finalId)}`;
+            const json = await fetchWithProxy(dataUrl);
+
+            if (json.success === false){
+                throw new Error(json.message || "API Error: Target not found or invalid ID format.");
+            }
+            if (!json.success || !json.data){
+                throw new Error("No data found for this query.");
+            }
+
+            const d = json.data;
+            let mainCard = `<div class="source-group"><div class="source-title">Telegram Intelligence</div><div class="record-card"><h5>Target Data</h5>`;
+            const rows = [];
+
+            if (d._TARGET_ACQUIRED_){
+                const t = d._TARGET_ACQUIRED_;
+                if (t.OPERATIVE_NAME) rows.push(['Operative Name', t.OPERATIVE_NAME]);
+                if (t.OPERATIVE_ID) rows.push(['Operative ID', t.OPERATIVE_ID]);
+                if (t.PROTOCOL) rows.push(['Protocol', t.PROTOCOL]);
+                if (t.QUERY) rows.push(['Query', t.QUERY]);
+            }
+            if (d.tg_id) rows.push(['TG ID', d.tg_id]);
+            if (d.number) rows.push(['Phone Number', d.number]);
+            if (d.country) rows.push(['Country', d.country]);
+            if (d.country_code) rows.push(['Country Code', d.country_code]);
+            if (d.remaining_searches !== undefined) rows.push(['Remaining Searches', d.remaining_searches]);
+            if (d.response_time) rows.push(['Response Time', d.response_time]);
+            if (d.req_left !== undefined) rows.push(['Req Left', d.req_left]);
+            if (d.req_total !== undefined) rows.push(['Req Total', d.req_total]);
+            if (d.expiry) rows.push(['Expiry', d.expiry]);
+            if (d.cached !== undefined) rows.push(['Cached', d.cached]);
+
+            if (rows.length === 0) throw new Error("No usable data returned.");
+
+            for (const [k, v] of rows){
+                mainCard += `<div class="data-row"><span class="data-label">${esc(k)}</span><span class="data-value">${esc(v)}</span></div>`;
+                reportText += `${k}: ${v}\n`;
+            }
+            mainCard += `</div></div>`;
+            htmlParts.push(mainCard);
+
+            if (d._SECURITY_PROTOCOL_){
+                const s = d._SECURITY_PROTOCOL_;
+                let sec = `<div class="source-group"><div class="source-title">Security Protocol</div><div class="record-card"><h5>Meta</h5>`;
+                for (const k in s){
+                    sec += `<div class="data-row"><span class="data-label">${esc(k)}</span><span class="data-value">${esc(s[k])}</span></div>`;
+                    reportText += `${k}: ${s[k]}\n`;
+                }
+                sec += `</div></div>`;
+                htmlParts.push(sec);
+            }
+
+            reportText += `\n--- Provider: ${json.developer || 'N/A'} ---\n`;
         }
-    </script>
+        else if (currentTab === 'phone'){
+            const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${encodeURIComponent(query)}`;
+            const json = await fetchWithProxy(targetUrl);
+
+            if (!(json.status && json.data && Object.keys(json.data).length > 0)){
+                throw new Error("No data found for this phone number");
+            }
+
+            reportText += `RAJPUT INFO — REPORT\n`;
+            reportText += `Mode: Phone Info\n`;
+            reportText += `Query: ${json.query || query}\n`;
+            reportText += `Generated: ${new Date().toUTCString()}\n`;
+            reportText += `----------------------------------------\n\n`;
+
+            for (const key in json.data){
+                const source = json.data[key];
+                const title = source.title || key;
+                let block = `<div class="source-group"><h4 class="source-title">${esc(title)}</h4>`;
+                reportText += `=== ${title} ===\n`;
+
+                if (source.description){
+                    block += `<p class="source-desc">${esc(source.description)}</p>`;
+                    reportText += `${source.description}\n\n`;
+                }
+
+                if (source.records && source.records.length > 0){
+                    source.records.forEach((record, index) => {
+                        block += `<div class="record-card"><h5>Record ${index + 1}</h5>`;
+                        reportText += `--- Record ${index + 1} ---\n`;
+                        for (const field in record){
+                            if (record[field] !== null && record[field] !== undefined && record[field] !== ''){
+                                block += `<div class="data-row"><span class="data-label">${esc(field)}</span><span class="data-value">${esc(record[field])}</span></div>`;
+                                reportText += `  ${field}: ${record[field]}\n`;
+                            }
+                        }
+                        block += `</div>`;
+                        reportText += `\n`;
+                    });
+                } else {
+                    block += `<p class="empty-note">No detailed records.</p>`;
+                    reportText += `(no detailed records)\n\n`;
+                }
+                block += `</div>`;
+                htmlParts.push(block);
+            }
+
+            reportText += `\n--- Provider: ${json.developer || 'N/A'} ---\n`;
+            reportText += `Response Time: ${json.response_time_ms || 'N/A'} ms\n`;
+        }
+
+        resultData.innerHTML = htmlParts.join('');
+        resultBox.classList.add('active');
+    } catch (err){
+        errorMsg.innerText = err.message;
+        errorMsg.classList.add('active');
+    } finally {
+        btn.disabled = false;
+        loading.classList.remove('active');
+    }
+}
+</script>
 </body>
 </html>
