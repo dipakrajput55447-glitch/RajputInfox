@@ -5,90 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rajput Info - Premium OSINT</title>
     <style>
-        :root {
-            --bg: #050505;
-            --surface: #111111;
-            --gold: #D4AF37;
-            --text: #F5F5F5;
-            --error: #E53935;
-            --border: #333333;
-        }
+        :root { --bg: #050505; --surface: #111111; --gold: #D4AF37; --text: #F5F5F5; --error: #E53935; --border: #333333; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg); color: var(--text); text-align: center; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        
         .logo { font-size: 3rem; margin-top: 20px; margin-bottom: 10px; text-shadow: 0 0 20px rgba(212, 175, 55, 0.5); }
         h1 { color: var(--gold); font-size: 2.2rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; font-weight: 800; }
         p.subtitle { font-size: 1rem; color: #888; margin-bottom: 30px; letter-spacing: 1px; }
-        
         .container { width: 100%; max-width: 650px; background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-        
         .tabs { display: flex; justify-content: space-around; margin-bottom: 25px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .tab-btn { background: none; border: none; color: #888; font-size: 0.95rem; font-weight: bold; cursor: pointer; padding: 10px; transition: 0.3s; border-radius: 5px; }
         .tab-btn:hover { color: var(--gold); }
         .tab-btn.active { color: var(--gold); background: rgba(212, 175, 55, 0.1); }
-        
         .input-group { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
         input { width: 100%; padding: 15px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: white; font-size: 1rem; outline: none; transition: 0.3s; }
         input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
-        
         .search-btn { background: var(--gold); color: #000; padding: 15px; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
         .search-btn:hover { background: #F5C842; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3); }
         .search-btn:disabled { background: #555; cursor: not-allowed; transform: none; box-shadow: none; }
-        
         .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; max-height: 500px; overflow-y: auto; }
         .result-box.active { display: block; animation: fadeIn 0.4s ease; }
-        
         .result-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
-        .result-header h3 { color: var(--gold); font-size: 1.2rem; margin: 0; border: none; padding: 0; }
+        .result-header h3 { color: var(--gold); font-size: 1.2rem; margin: 0; }
         .copy-btn { background: var(--gold); color: #000; border: none; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: 0.3s; }
         .copy-btn:hover { background: #F5C842; }
-        
         .source-group { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; padding: 15px; }
         .source-title { color: var(--gold); font-size: 1.1rem; margin-bottom: 10px; border-bottom: 1px dashed var(--border); padding-bottom: 5px; }
         .source-desc { color: #aaa; font-size: 0.85rem; margin-bottom: 15px; line-height: 1.4; }
-        
         .record-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 15px; }
         .record-card:last-child { margin-bottom: 0; }
         .record-card h5 { color: var(--gold); margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
-        
         .data-row { margin-bottom: 8px; font-size: 0.9rem; padding: 6px; background: var(--surface); border-radius: 4px; border-left: 3px solid var(--gold); }
         .data-label { color: var(--gold); font-weight: bold; display: block; margin-bottom: 2px; font-size: 0.75rem; text-transform: uppercase; }
         .data-value { color: #ddd; font-family: monospace; word-break: break-all; white-space: pre-wrap; }
-        
         .error-msg { color: var(--error); font-weight: bold; text-align: center; display: none; margin-top: 15px; background: rgba(229, 57, 53, 0.1); padding: 15px; border-radius: 5px; border: 1px solid rgba(229, 57, 53, 0.3); }
         .error-msg.active { display: block; animation: fadeIn 0.3s ease; }
-        
         .loading { color: var(--gold); display: none; margin-top: 15px; font-style: italic; font-weight: bold; }
         .loading.active { display: block; animation: pulse 1.5s infinite; }
-        
         .telegram-join { margin-top: 40px; display: inline-block; text-decoration: none; color: #000; background: var(--gold); padding: 12px 30px; border-radius: 30px; font-weight: bold; transition: 0.3s; }
         .telegram-join:hover { background: #F5C842; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4); }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
     </style>
 </head>
 <body>
-
     <div class="logo">👑</div>
     <h1>Rajput Info</h1>
     <p class="subtitle">Premium OSINT & Intelligence Tool</p>
-
     <div class="container">
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('tg-id', this)">Telegram ID</button>
             <button class="tab-btn" onclick="switchTab('tg-user', this)">Username</button>
             <button class="tab-btn" onclick="switchTab('phone', this)">Phone Info</button>
         </div>
-
         <div class="input-group">
             <input type="text" id="searchInput" placeholder="Enter Telegram ID (e.g. 1234567890)" onkeypress="handleEnter(event)">
             <button class="search-btn" id="searchBtn" onclick="performSearch()">SEARCH</button>
         </div>
-
         <div class="loading" id="loading">Fetching intelligence data...</div>
         <div class="error-msg" id="errorMsg"></div>
-        
         <div class="result-box" id="resultBox">
             <div class="result-header">
                 <h3>Intelligence Report</h3>
@@ -97,22 +71,19 @@
             <div id="resultData"></div>
         </div>
     </div>
-
     <a href="https://t.me/AnonymouschatbotR" class="telegram-join" target="_blank">Join Telegram Channel</a>
 
     <script>
         let currentTab = 'tg-id';
         
-        // AAPKA CLOUDFLARE WORKER LINK
+        // Tera custom Cloudflare Worker Link
         const myWorkerUrl = 'https://dawn-feather-771c.dipakrajput55447.workers.dev/?url=';
 
-        // Improved Proxy Fetch to handle API errors properly
         async function fetchWithProxy(targetUrl) {
-            const res = await fetch(myWorkerUrl + encodeURIComponent(targetUrl));
-            const text = await res.text(); // Pehle text lein
-            
             try {
-                return JSON.parse(text); // Phir JSON parse karein
+                const res = await fetch(myWorkerUrl + encodeURIComponent(targetUrl));
+                const text = await res.text(); 
+                return JSON.parse(text); 
             } catch (e) {
                 throw new Error("API Server is down or returned invalid data.");
             }
@@ -122,19 +93,15 @@
             currentTab = tab;
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            
             const input = document.getElementById('searchInput');
-            if(tab === 'tg-id') input.placeholder = "Enter Telegram ID (e.g. 1234567890)";
+            if(tab === 'tg-id') input.placeholder = "Enter 10-digit Telegram ID";
             if(tab === 'tg-user') input.placeholder = "Enter Telegram Username (without @)";
             if(tab === 'phone') input.placeholder = "Enter 10-digit Number (e.g. 9876543210)";
-            
             input.value = "";
             hideResults();
         }
 
-        function handleEnter(e) {
-            if (e.key === 'Enter') performSearch();
-        }
+        function handleEnter(e) { if (e.key === 'Enter') performSearch(); }
 
         function hideResults() {
             document.getElementById('resultBox').classList.remove('active');
@@ -143,25 +110,24 @@
             document.getElementById('copyBtn').innerText = "Copy";
         }
 
-        // COPY BUTTON LOGIC
         function copyResults() {
             const textToCopy = document.getElementById('resultData').innerText;
             if(!textToCopy) return;
-
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const btn = document.getElementById('copyBtn');
                 btn.innerText = "Copied!";
                 setTimeout(() => { btn.innerText = "Copy"; }, 2000);
-            }).catch(err => {
-                alert("Failed to copy: " + err);
-            });
+            }).catch(err => alert("Failed to copy: " + err));
         }
 
         async function performSearch() {
             let query = document.getElementById('searchInput').value.trim();
             if(!query) return alert("Please enter a search query.");
 
-            // AUTO ADD +91 FOR PHONE
+            if (currentTab === 'tg-user' && query.startsWith('@')) {
+                query = query.substring(1);
+            }
+
             if (currentTab === 'phone' && /^\d{10}$/.test(query)) {
                 query = '+91' + query;
             }
@@ -188,28 +154,40 @@
                         
                         if(idJson.result && idJson.result.data && idJson.result.data.id) {
                             finalId = idJson.result.data.id;
-                        } else { throw new Error("Username not found in database."); }
+                            finalData["Resolved ID"] = finalId;
+                        } else {
+                            throw new Error("Username not found in database.");
+                        }
+                    }
+
+                    // FIX: Agar ID 9 digit ki hai, toh aage 0 laga do (taaki 10 digit ho jaye)
+                    if (finalId.length === 9 && /^\d+$/.test(finalId)) {
+                        finalId = '0' + finalId;
                     }
 
                     const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajpoot2.0&q=${finalId}`;
                     const json = await fetchWithProxy(dataUrl);
                     
-                    // Agar API down hai ya target nahi mila
                     if(json.success === false) {
-                        throw new Error(json.message || "Target Not Found.");
+                        throw new Error(json.message || "API Error: Target not found or invalid ID format.");
                     }
 
                     if(json.success && json.data) {
-                        finalData["Operative Name"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
-                        finalData["Operative ID"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_ID || "N/A";
+                        if(json.data._TARGET_ACQUIRED_) {
+                            finalData["Name"] = json.data._TARGET_ACQUIRED_.OPERATIVE_NAME || "Unknown";
+                            finalData["Operative ID"] = json.data._TARGET_ACQUIRED_.OPERATIVE_ID || "N/A";
+                        }
                         if(json.data.results) {
                             finalData["Country"] = json.data.results.country;
                             finalData["Country Code"] = json.data.results.country_code;
-                            finalData["Number"] = json.data.results.number;
+                            finalData["Phone Number"] = json.data.results.number;
                             finalData["TG ID"] = json.data.results.tg_id;
                         }
-                    } else { throw new Error("No data found for this query."); }
+                    } else { 
+                        throw new Error("No data found for this query."); 
+                    }
 
+                    let hasData = false;
                     for(let key in finalData) {
                         if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
                             resultData.innerHTML += `
@@ -217,8 +195,10 @@
                                     <span class="data-label">${key}</span>
                                     <span class="data-value">${finalData[key]}</span>
                                 </div>`;
+                            hasData = true;
                         }
                     }
+                    if(!hasData) throw new Error("No usable data returned.");
                     
                 } else if (currentTab === 'phone') {
                     const targetUrl = `https://deeposint.felixrdx.xyz/api/developer/Cyb3rB4nn3r/?key=9c8c8ebe8355255bb2c4cd2e002476cf&query=${query}`;
@@ -261,9 +241,7 @@
                         throw new Error("No data found for this phone number"); 
                     }
                 }
-
                 resultBox.classList.add('active');
-
             } catch (err) {
                 errorMsg.innerText = err.message;
                 errorMsg.classList.add('active');
