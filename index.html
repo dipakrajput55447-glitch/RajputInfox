@@ -95,32 +95,14 @@
 
     <script>
         let currentTab = 'tg-id';
+        
+        // AAPKA CLOUDFLARE WORKER LINK
+        const myWorkerUrl = 'https://dawn-feather-771c.dipakrajput55447.workers.dev/?url=';
 
-        // MULTI-PROXY SYSTEM: Agar ek fail ho, toh doosra try karega
         async function fetchWithProxy(targetUrl) {
-            const proxies = [
-                `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`,
-                `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`,
-                `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-                `https://cors-anywhere.herokuapp.com/${targetUrl}`
-            ];
-
-            for (let proxy of proxies) {
-                try {
-                    const res = await fetch(proxy);
-                    if (res.ok) {
-                        const text = await res.text();
-                        try {
-                            return JSON.parse(text); // Check karein ki data sahi JSON hai
-                        } catch(e) {
-                            console.log("JSON Parse Error from proxy");
-                        }
-                    }
-                } catch (e) {
-                    console.log("Proxy failed, trying next...");
-                }
-            }
-            throw new Error("All proxies failed. API down or blocked.");
+            const res = await fetch(myWorkerUrl + encodeURIComponent(targetUrl));
+            if (!res.ok) throw new Error("Network response was not ok");
+            return await res.json();
         }
 
         function switchTab(tab, btn) {
@@ -144,6 +126,7 @@
         function hideResults() {
             document.getElementById('resultBox').classList.remove('active');
             document.getElementById('errorMsg').classList.remove('active');
+            document.getElementById('errorMsg').innerText = "";
         }
 
         async function performSearch() {
@@ -167,17 +150,21 @@
                     let finalId = query;
 
                     if (currentTab === 'tg-user') {
-                        const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajput&q=${query}`;
+                        const idUrl = `https://osint.invalidayushh.workers.dev/id?key=Rajpoot2.0&q=${query}`;
                         const idJson = await fetchWithProxy(idUrl);
                         
                         if(idJson.result && idJson.result.data && idJson.result.data.id) {
                             finalId = idJson.result.data.id;
-                        } else { throw new Error("Username not found in database"); }
+                        } else { throw new Error("Username not found in database."); }
                     }
 
-                    const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajput&q=${finalId}`;
+                    const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajpoot2.0&q=${finalId}`;
                     const json = await fetchWithProxy(dataUrl);
                     
+                    if(json.success === false) {
+                        throw new Error(json.message || "Target Not Found.");
+                    }
+
                     if(json.success && json.data) {
                         finalData["Operative Name"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_NAME || "Unknown";
                         finalData["Operative ID"] = json.data._TARGET_ACQUIRED_?.OPERATIVE_ID || "N/A";
@@ -187,7 +174,7 @@
                             finalData["Number"] = json.data.results.number;
                             finalData["TG ID"] = json.data.results.tg_id;
                         }
-                    } else { throw new Error("No data found for this Telegram query"); }
+                    } else { throw new Error("No data found for this Telegram query."); }
 
                     for(let key in finalData) {
                         if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
@@ -231,7 +218,7 @@
                                     htmlContent += `</div>`;
                                 });
                             } else {
-                                htmlContent += `<p style="color:#888; font-size:0.9rem;">No detailed records in this source.</p>`;
+                                htmlContent += `<p style="color:#888; font-size:0.9rem;">No detailed records.</p>`;
                             }
                             htmlContent += `</div>`;
                         }
