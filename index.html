@@ -37,7 +37,11 @@
         
         .result-box { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: left; display: none; margin-top: 20px; max-height: 500px; overflow-y: auto; }
         .result-box.active { display: block; animation: fadeIn 0.4s ease; }
-        .result-box h3 { color: var(--gold); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; font-size: 1.2rem; }
+        
+        .result-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; }
+        .result-header h3 { color: var(--gold); font-size: 1.2rem; margin: 0; border: none; padding: 0; }
+        .copy-btn { background: var(--gold); color: #000; border: none; padding: 6px 12px; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 0.85rem; transition: 0.3s; }
+        .copy-btn:hover { background: #F5C842; }
         
         .source-group { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; padding: 15px; }
         .source-title { color: var(--gold); font-size: 1.1rem; margin-bottom: 10px; border-bottom: 1px dashed var(--border); padding-bottom: 5px; }
@@ -86,7 +90,10 @@
         <div class="error-msg" id="errorMsg"></div>
         
         <div class="result-box" id="resultBox">
-            <h3>Intelligence Report</h3>
+            <div class="result-header">
+                <h3>Intelligence Report</h3>
+                <button class="copy-btn" id="copyBtn" onclick="copyResults()">Copy</button>
+            </div>
             <div id="resultData"></div>
         </div>
     </div>
@@ -99,10 +106,16 @@
         // AAPKA CLOUDFLARE WORKER LINK
         const myWorkerUrl = 'https://dawn-feather-771c.dipakrajput55447.workers.dev/?url=';
 
+        // Improved Proxy Fetch to handle API errors properly
         async function fetchWithProxy(targetUrl) {
             const res = await fetch(myWorkerUrl + encodeURIComponent(targetUrl));
-            if (!res.ok) throw new Error("Network response was not ok");
-            return await res.json();
+            const text = await res.text(); // Pehle text lein
+            
+            try {
+                return JSON.parse(text); // Phir JSON parse karein
+            } catch (e) {
+                throw new Error("API Server is down or returned invalid data.");
+            }
         }
 
         function switchTab(tab, btn) {
@@ -113,7 +126,7 @@
             const input = document.getElementById('searchInput');
             if(tab === 'tg-id') input.placeholder = "Enter Telegram ID (e.g. 1234567890)";
             if(tab === 'tg-user') input.placeholder = "Enter Telegram Username (without @)";
-            if(tab === 'phone') input.placeholder = "Enter Phone Number (e.g. +919876543210)";
+            if(tab === 'phone') input.placeholder = "Enter 10-digit Number (e.g. 9876543210)";
             
             input.value = "";
             hideResults();
@@ -127,11 +140,31 @@
             document.getElementById('resultBox').classList.remove('active');
             document.getElementById('errorMsg').classList.remove('active');
             document.getElementById('errorMsg').innerText = "";
+            document.getElementById('copyBtn').innerText = "Copy";
+        }
+
+        // COPY BUTTON LOGIC
+        function copyResults() {
+            const textToCopy = document.getElementById('resultData').innerText;
+            if(!textToCopy) return;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const btn = document.getElementById('copyBtn');
+                btn.innerText = "Copied!";
+                setTimeout(() => { btn.innerText = "Copy"; }, 2000);
+            }).catch(err => {
+                alert("Failed to copy: " + err);
+            });
         }
 
         async function performSearch() {
-            const query = document.getElementById('searchInput').value.trim();
+            let query = document.getElementById('searchInput').value.trim();
             if(!query) return alert("Please enter a search query.");
+
+            // AUTO ADD +91 FOR PHONE
+            if (currentTab === 'phone' && /^\d{10}$/.test(query)) {
+                query = '+91' + query;
+            }
 
             const btn = document.getElementById('searchBtn');
             const loading = document.getElementById('loading');
@@ -161,6 +194,7 @@
                     const dataUrl = `https://osint.invalidayushh.workers.dev/tgv2?key=Rajpoot2.0&q=${finalId}`;
                     const json = await fetchWithProxy(dataUrl);
                     
+                    // Agar API down hai ya target nahi mila
                     if(json.success === false) {
                         throw new Error(json.message || "Target Not Found.");
                     }
@@ -174,7 +208,7 @@
                             finalData["Number"] = json.data.results.number;
                             finalData["TG ID"] = json.data.results.tg_id;
                         }
-                    } else { throw new Error("No data found for this Telegram query."); }
+                    } else { throw new Error("No data found for this query."); }
 
                     for(let key in finalData) {
                         if(finalData[key] && finalData[key] !== "N/A" && finalData[key] !== "Unknown") {
