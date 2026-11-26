@@ -187,7 +187,6 @@ input:focus{border-color:var(--gold);box-shadow:0 0 15px rgba(212,175,55,.25),in
         const line = lines[li];
         cur += line[ci] || '';
         boot.innerHTML = (li > 0 ? '<br>' : '') + boot.innerHTML.split('<br>').slice(0, li).join('<br>');
-        // simpler: rebuild
         let out = [];
         for (let i = 0; i < li; i++) out.push(lines[i]);
         out.push(cur);
@@ -264,11 +263,16 @@ function copyResults(){
 function downloadResults(){
     if (!reportText) return;
     const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = `RajputInfo_${currentTab}_${stamp}.txt`;
+    if (window.AndroidBridge && window.AndroidBridge.saveFile) {
+        window.AndroidBridge.saveFile(filename, reportText);
+        return;
+    }
     const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `RajputInfo_${currentTab}_${stamp}.txt`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -286,6 +290,17 @@ function esc(v){
 async function performSearch(){
     let query = document.getElementById('searchInput').value.trim();
     if (!query) return alert("Please enter a search query.");
+
+    // --- CREDITS CHECK START ---
+    if (window.AndroidBridge) {
+        let hasCredit = window.AndroidBridge.useCredit();
+        if (!hasCredit) {
+            return alert("Out of credits! Contact Admin: @AnonymouschatbotR");
+        }
+        let left = window.AndroidBridge.getCredits();
+        console.log("Credits left: " + left);
+    }
+    // --- CREDITS CHECK END ---
 
     if (currentTab === 'tg-user' && query.startsWith('@')) query = query.substring(1);
     if (currentTab === 'phone' && /^\d{10}$/.test(query)) query = '+91' + query;
