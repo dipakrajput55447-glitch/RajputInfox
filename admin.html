@@ -89,7 +89,6 @@ pre{background:#07120a;padding:12px;border-radius:6px;overflow-x:auto;font-size:
     var el = document.getElementById('out');
     el.textContent = typeof x === 'string' ? x : JSON.stringify(x, null, 2);
   }
-  window.show = show;
 
   function api(path, body, method){
     method = method || 'POST';
@@ -97,42 +96,57 @@ pre{background:#07120a;padding:12px;border-radius:6px;overflow-x:auto;font-size:
       method: method,
       headers: {'Content-Type':'application/json','X-Admin-Key': keyEl.value},
       body: body ? JSON.stringify(body) : undefined
-    }).then(function(r){ return r.json(); });
+    }).then(function(r){ return r.json(); })
+    .catch(function(err){
+      alert("Network Error: " + err.message);
+      throw err;
+    });
   }
-  window.api = api;
 
   window.createUser = function(){
-    var u = document.getElementById('newUser').value.trim();
-    var p = document.getElementById('newPass').value;
-    var planVal = newPlan.value;
-    var days;
-    var planLabel;
-    if (planVal === 'custom|0') {
-      days = parseInt(newCustom.value, 10);
-      planLabel = 'custom ' + days + 'd';
-    } else {
-      var parts = planVal.split('|');
-      planLabel = parts[0];
-      days = parseInt(parts[1], 10);
-    }
-    if (!days || days < 1) { show('Invalid duration'); return; }
-    var notes = document.getElementById('newNotes').value.trim();
-    api('/api/admin/create-user', {username:u, password:p, days:days, plan:planLabel, notes:notes}).then(function(res){
-      var out = document.getElementById('createOut');
-      if (res.ok) {
-        out.innerHTML = '<pre class="ok">CREATED\\nID: ' + res.username + '\\nPASS: ' + res.password + '\\nPLAN: ' + res.plan + '\\nEXPIRES: ' + new Date(res.expiresAt).toLocaleString() + '</pre>';
-        document.getElementById('newUser').value = '';
-        document.getElementById('newPass').value = '';
-        document.getElementById('newNotes').value = '';
+    try {
+      var u = document.getElementById('newUser').value.trim();
+      var p = document.getElementById('newPass').value;
+      var planVal = newPlan.value;
+      var days;
+      var planLabel;
+      if (planVal === 'custom|0') {
+        days = parseInt(newCustom.value, 10);
+        planLabel = 'custom ' + days + 'd';
       } else {
-        out.innerHTML = '<span class="err">' + (res.error || 'error') + '</span>';
+        var parts = planVal.split('|');
+        planLabel = parts[0];
+        days = parseInt(parts[1], 10);
       }
-    });
+      if (!days || days < 1) { alert('Invalid duration'); return; }
+      var notes = document.getElementById('newNotes').value.trim();
+      
+      var out = document.getElementById('createOut');
+      out.innerHTML = '<span style="color:yellow;">Processing...</span>';
+      
+      api('/api/admin/create-user', {username:u, password:p, days:days, plan:planLabel, notes:notes}).then(function(res){
+        if (res.ok) {
+          out.innerHTML = '<pre class="ok">CREATED\\nID: ' + res.username + '\\nPASS: ' + res.password + '\\nPLAN: ' + res.plan + '\\nEXPIRES: ' + new Date(res.expiresAt).toLocaleString() + '</pre>';
+          document.getElementById('newUser').value = '';
+          document.getElementById('newPass').value = '';
+          document.getElementById('newNotes').value = '';
+        } else {
+          out.innerHTML = '<span class="err">' + (res.error || 'error') + '</span>';
+        }
+      }).catch(function(err){
+        out.innerHTML = '<span class="err">Network/Server Error</span>';
+      });
+    } catch(e) {
+      alert("Error: " + e.message);
+    }
   };
 
   window.refreshList = function(){
+    var out = document.getElementById('listOut');
+    out.innerHTML = '<span style="color:yellow;">Loading...</span>';
+    
     api('/api/admin/list', null, 'GET').then(function(res){
-      if (!res.ok) { document.getElementById('listOut').innerHTML = '<span class="err">' + (res.error || 'error') + '</span>'; return; }
+      if (!res.ok) { out.innerHTML = '<span class="err">' + (res.error || 'error') + '</span>'; return; }
       var html = '<table><thead><tr><th>USER</th><th>PLAN</th><th>EXPIRES</th><th>DAYS</th><th>DEVICE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>';
       res.users.forEach(function(u){
         var status = !u.active ? '<span class="pill disabled">DISABLED</span>' :
@@ -157,7 +171,9 @@ pre{background:#07120a;padding:12px;border-radius:6px;overflow-x:auto;font-size:
           '</td></tr>';
       });
       html += '</tbody></table>';
-      document.getElementById('listOut').innerHTML = html;
+      out.innerHTML = html;
+    }).catch(function(err){
+      out.innerHTML = '<span class="err">Network/Server Error</span>';
     });
   };
 
@@ -173,27 +189,27 @@ pre{background:#07120a;padding:12px;border-radius:6px;overflow-x:auto;font-size:
     api('/api/admin/extend', {username:username, days:days, plan: '+' + days + 'd'}).then(function(res){
       show(res);
       if (res.ok) refreshList();
-    });
+    }).catch(function(){});
   };
 
   window.doUnbind = function(username){
     if (!confirm('Unbind device for ' + username + '?')) return;
-    api('/api/admin/unbind', {username:username}).then(function(res){ show(res); if (res.ok) refreshList(); });
+    api('/api/admin/unbind', {username:username}).then(function(res){ show(res); if (res.ok) refreshList(); }).catch(function(){});
   };
 
   window.doReset = function(username){
     var np = prompt('New password for ' + username + ' (blank = auto)');
     if (np === null) return;
-    api('/api/admin/reset-password', {username:username, password:np}).then(function(res){ show(res); if (res.ok) alert('New password: ' + res.password); });
+    api('/api/admin/reset-password', {username:username, password:np}).then(function(res){ show(res); if (res.ok) alert('New password: ' + res.password); }).catch(function(){});
   };
 
   window.doDisable = function(username, active){
-    api('/api/admin/disable', {username:username, active:active}).then(function(res){ show(res); if (res.ok) refreshList(); });
+    api('/api/admin/disable', {username:username, active:active}).then(function(res){ show(res); if (res.ok) refreshList(); }).catch(function(){});
   };
 
   window.doDelete = function(username){
     if (!confirm('DELETE user ' + username + '? This cannot be undone.')) return;
-    api('/api/admin/delete', {username:username}).then(function(res){ show(res); if (res.ok) refreshList(); });
+    api('/api/admin/delete', {username:username}).then(function(res){ show(res); if (res.ok) refreshList(); }).catch(function(){});
   };
 })();
 </script>
