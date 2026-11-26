@@ -291,6 +291,12 @@ async function performSearch(){
     let query = document.getElementById('searchInput').value.trim();
     if (!query) return alert("Please enter a search query.");
 
+    // --- MAINTENANCE CHECK ---
+    if (window.AndroidBridge && window.AndroidBridge.isMaintenance && window.AndroidBridge.isMaintenance()) {
+        return alert("App is under maintenance. Please try again later.");
+    }
+    // -------------------------
+
     // --- CREDITS CHECK START ---
     if (window.AndroidBridge) {
         let hasCredit = window.AndroidBridge.useCredit();
